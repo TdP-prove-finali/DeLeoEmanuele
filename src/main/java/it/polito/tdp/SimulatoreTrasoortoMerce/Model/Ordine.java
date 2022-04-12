@@ -1,5 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Ordine {
@@ -9,22 +10,23 @@ public class Ordine {
 	String destinazione;
 	double peso;
 	double volume;
+	LocalDateTime data;
 	
-	public Ordine(int id, String sorgente, String destinazione, double peso, double volume) {
+	public Ordine(int id, String sorgente, String destinazione, double peso, double volume, LocalDateTime data) {
 		
 		this.id = id;
 		this.sorgente = sorgente;
 		this.destinazione = destinazione;
 		this.peso = peso;
 		this.volume = volume;
+		this.data=data;
 	}
 
-	/**
-	 * @return the id
-	 */
+
 	public int getId() {
-		return id;
+		return this.id;
 	}
+
 
 	/**
 	 * @param id the id to set
@@ -87,6 +89,10 @@ public class Ordine {
 	 */
 	public void setVolume(double volume) {
 		this.volume = volume;
+	}
+	
+	public LocalDateTime getData() {
+		return this.data;
 	}
 
 	@Override
