@@ -114,8 +114,9 @@ public class Ordine {
 
 	@Override
 	public String toString() {
+		
 		return "Ordine [id=" + id + ", sorgente=" + sorgente + ", destinazione=" + destinazione + ", peso=" + peso
-				+ ", volume=" + volume + "]";
+				+ ", volume=" + volume + ", data="+data.getDayOfMonth()+"-"+data.getMonthValue()+"-"+data.getYear()+" "+data.getHour()+":"+data.getMinute()+":"+data.getSecond()+"]";
 	}
 	
 	

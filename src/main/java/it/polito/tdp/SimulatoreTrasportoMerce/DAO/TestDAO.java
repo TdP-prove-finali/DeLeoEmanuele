@@ -1,9 +1,11 @@
 package it.polito.tdp.SimulatoreTrasportoMerce.DAO;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
 
 public class TestDAO {
@@ -12,9 +14,13 @@ public class TestDAO {
 
 		DAO dao = new DAO();
 
-LocalDateTime date = LocalDateTime.now();
-Ordine oo = new Ordine(5,"sorgente","destino",34.5,7.6,date);
-dao.addOrdine(oo);
+		List<Mezzo> mezzi = new ArrayList<Mezzo>();
+		
+		Mezzo mezzo = new Mezzo(1,"Aereo",2.3,3.5,4.5,1);
+		mezzi.add(mezzo);
+		System.out.println(dao.getTratte(mezzi).size());
+	
+		
 	}
 
 }

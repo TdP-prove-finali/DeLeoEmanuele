@@ -1,6 +1,7 @@
 package it.polito.tdp.SimulatoreTrasportoMerce.DAO;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
-
-
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
 
 public class DAO {
 	
@@ -23,10 +24,6 @@ public class DAO {
 		
 		
 		final String sql = "SELECT DISTINCT Partenza "
-				+ "FROM tratte "
-				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus' OR Mezzo_di_trasporto = 'Treno' "
-				+ "UNION "
-				+ "SELECT DISTINCT Destinazione "
 				+ "FROM tratte "
 				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus' OR Mezzo_di_trasporto = 'Treno' "
 				+ ";";
@@ -72,19 +69,18 @@ public class DAO {
 		
 	}
 	
-	public Map<Integer,Ordine> getOrdini(){
+	public Ordine getOrdine(int id){
 		
-		Map<Integer, Ordine> mappa = new HashMap<Integer,Ordine>();
-		final String sql = "SELECT* FROM ordini";
-		
+		Ordine o = null;
+		final String sql = "SELECT* FROM ordini WHERE ID='"+id+"';";
+
 		try {
 			Connection conn = ConnectDB.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-				Ordine o = new Ordine(rs.getInt("ID"), rs.getString("Sorgente"), rs.getString("Destinazione"), Double.parseDouble(""+rs.getFloat("Peso")+""),Double.parseDouble(""+rs.getFloat("Volume")+""),rs.getTimestamp("Data").toLocalDateTime());
-				mappa.put(o.getId(), o);
+		o = new Ordine(rs.getInt("ID"), rs.getString("Sorgente"), rs.getString("Destinazione"), Double.parseDouble(""+rs.getFloat("Peso")+""),Double.parseDouble(""+rs.getFloat("Volume")+""),rs.getTimestamp("Data").toLocalDateTime());
 			}
 
 			st.close();
@@ -95,15 +91,47 @@ public class DAO {
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
 		
-		return mappa;
+		return o;
 	}
-
 	
+	public List<Tratta> getTratte(List<Mezzo> mezzi, List<Citta> citta) {
+		
+		Map<String,Citta> mapCitta = new HashMap<String, Citta>();
+		
+		for (Citta c : citta) {
+			mapCitta.put(c.getNome(), c);
+		}
+		List<Tratta> tratte = new ArrayList<Tratta>();
+		final String sql = "SELECT* FROM tratte;";
+		try {
+			
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
 	
-	
-	
-	
-	
+			while (rs.next()) {
+				
+				for(Mezzo m : mezzi) {
+					
+					if (m.getTipo().compareTo(rs.getString("Mezzo_di_trasporto"))==0) {
+						
+						Tratta newTratta = new Tratta(mapCitta.get(rs.getString("Partenza")), mapCitta.get(rs.getString("Destinazione")) ,Double.parseDouble(rs.getString("Distanza_km").replace(",", ".")), rs.getString("Mezzo_di_trasporto"), rs.getInt("Emissioni_g"));
+						if (!tratte.contains(newTratta)) { 
+						tratte.add(newTratta);
+						}
+					}
+				}
+			st.close();
+			conn.close();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+		
+		return tratte;
+	}
 	
 	
 
