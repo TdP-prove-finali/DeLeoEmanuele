@@ -65,10 +65,12 @@ public class Model {
 		Double pesoMigliore = 99999.9;
 		
 		for (Mezzo m : mezzi) {
+			if (grafo.containsVertex(m.getCitta())) {
 			Double peso = getPesoComplessivo(dijkstra.getPathWeight(m.getCitta(), o.getSorgente()), m.getVelocitaMedia(), m.getCostoCarburante()*dijkstra.getPathWeight(m.getCitta(), o.getSorgente()), percentualeDistanza, percentualeVelocita, percentualeConsumo);
 			if (peso<=pesoMigliore && m.getSpazioOccupato()<m.getSpazioMax() && m.getPesoOccupato()<m.getPesoMax()) {
 				mezzoMigliore = m;
 				pesoMigliore = peso;
+			}
 			}
 		}
 		
