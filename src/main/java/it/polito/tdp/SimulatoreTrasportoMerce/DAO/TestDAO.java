@@ -18,7 +18,6 @@ public class TestDAO {
 		
 		Mezzo mezzo = new Mezzo(1,"Aereo",2.3,3.5,4.5,1);
 		mezzi.add(mezzo);
-		System.out.println(dao.getTratte(mezzi).size());
 	
 		
 	}

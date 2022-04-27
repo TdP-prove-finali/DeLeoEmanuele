@@ -6,13 +6,13 @@ import java.util.Objects;
 public class Ordine {
 	
 	int id;
-	String sorgente;
-	String destinazione;
+	Citta sorgente;
+	Citta destinazione;
 	double peso;
 	double volume;
 	LocalDateTime data;
 	
-	public Ordine(int id, String sorgente, String destinazione, double peso, double volume, LocalDateTime data) {
+	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, LocalDateTime data) {
 		
 		this.id = id;
 		this.sorgente = sorgente;
@@ -38,28 +38,28 @@ public class Ordine {
 	/**
 	 * @return the sorgente
 	 */
-	public String getSorgente() {
+	public Citta getSorgente() {
 		return sorgente;
 	}
 
 	/**
 	 * @param sorgente the sorgente to set
 	 */
-	public void setSorgente(String sorgente) {
+	public void setSorgente(Citta sorgente) {
 		this.sorgente = sorgente;
 	}
 
 	/**
 	 * @return the destinazione
 	 */
-	public String getDestinazione() {
+	public Citta getDestinazione() {
 		return destinazione;
 	}
 
 	/**
 	 * @param destinazione the destinazione to set
 	 */
-	public void setDestinazione(String destinazione) {
+	public void setDestinazione(Citta destinazione) {
 		this.destinazione = destinazione;
 	}
 
