@@ -16,7 +16,6 @@ public class TestDAO {
 
 		List<Mezzo> mezzi = new ArrayList<Mezzo>();
 		
-		Mezzo mezzo = new Mezzo(1,"Aereo",2.3,3.5,4.5,1);
 		mezzi.add(mezzo);
 	
 		

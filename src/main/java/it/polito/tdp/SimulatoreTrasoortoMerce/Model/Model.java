@@ -1,10 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
-
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,20 +10,19 @@ import java.util.TreeMap;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.Multigraph;
+
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
 
 public class Model {
 	
-	private Graph<Citta, DefaultWeightedEdge> grafo;
+	private Graph<Citta, Arco> grafo;
 	DAO dao;
 	List<Mezzo> mezzi;
 	List<Tratta> tratte;
 	Map<String,Citta> mapCitta;
-	DijkstraShortestPath<Citta, DefaultWeightedEdge> dijkstra;
+	DijkstraShortestPath<Citta, Arco> dijkstra;
 	
 	public Model() {
 	dao = new DAO();
@@ -37,19 +32,21 @@ public class Model {
 	}
 
 	public String creaGrafo() {
+	Arco a = null;
 	this.tratte=dao.getTratte(mezzi, mapCitta);	
-	this.grafo = new Multigraph<Citta, DefaultWeightedEdge>(DefaultWeightedEdge.class) ;
+	this.grafo = new SimpleWeightedGraph<Citta, Arco>(Arco.class) ;
 	Graphs.addAllVertices(this.grafo, mapCitta.values());	
 		
 	for (Tratta t : tratte) {
 		if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) {
-		Graphs.addEdge(grafo, t.getSorgente(), t.getDestinazione(), t.getDistanza());
+		a = new Arco(t.getSorgente(),t.getDestinazione(),t.getDistanza(), t.getMezzoTrasporto()); 
+	    grafo.addEdge(t.getSorgente(), t.getDestinazione(), a);
+		grafo.setEdgeWeight(a, t.getDistanza());
  		}
 		
 	}	
 	
-	dijkstra = new DijkstraShortestPath<Citta, DefaultWeightedEdge>(grafo);
-	System.out.println(this.grafo.vertexSet());
+	dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo);
 		return String.format("Grafo creato con %d vertici e %d archi\n",
 				this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size()) ;
@@ -95,7 +92,6 @@ public class Model {
 	}
 	
 	public void simulaOrdine(int nOrdini, LocalDateTime dataOrdine) {
-		Ordine o = null;
 		List<Citta> listaCitta = new ArrayList<Citta>(mapCitta.values());
 		Random rand = new Random();
 		double minPeso = 0.5;
@@ -121,7 +117,7 @@ public class Model {
 		double volume= rand.nextDouble() * (maxVolume - minVolume) + minVolume;
 		double volumeApprossimato = Math.round(volume*100.0)/100.0;
 		
-		o = new Ordine(i,sorgente,destinazione,pesoApprossimato,volumeApprossimato,dataOrdine);
+		Ordine o = new Ordine(i,sorgente,destinazione,pesoApprossimato,volumeApprossimato,dataOrdine);
 		dao.addOrdine(o);
 		
 		}

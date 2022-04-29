@@ -14,7 +14,7 @@ public class TestModel {
 		Mezzo mezzo2 = new Mezzo(2,"Treno",2.3,3.5,4.5,1,m.getMappaCitta().get("TOrino"));
 		m.aggiungiMezzo(mezzo);
 		m.aggiungiMezzo(mezzo2);
-    // 	System.out.println(m.creaGrafo());
+     	System.out.println(m.creaGrafo());
 		
 	//	Ordine o = new Ordine (1,m.getMappaCitta().get("Vercelli"),m.getMappaCitta().get("Trapani"), 0.9, 0.4, data);
 		
