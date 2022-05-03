@@ -10,14 +10,12 @@ import java.util.TreeMap;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-
-import org.jgrapht.graph.SimpleWeightedGraph;
-
+import org.jgrapht.graph.DirectedMultigraph;
 import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
 
 public class Model {
 	
-	private Graph<Citta, Arco> grafo;
+	public Graph<Citta, Arco> grafo;
 	DAO dao;
 	List<Mezzo> mezzi;
 	List<Tratta> tratte;
@@ -34,19 +32,19 @@ public class Model {
 	public String creaGrafo() {
 	Arco a = null;
 	this.tratte=dao.getTratte(mezzi, mapCitta);	
-	this.grafo = new SimpleWeightedGraph<Citta, Arco>(Arco.class) ;
+	this.grafo = new DirectedMultigraph<Citta, Arco>(Arco.class) ;
 	Graphs.addAllVertices(this.grafo, mapCitta.values());	
 		
 	for (Tratta t : tratte) {
 		if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) {
 		a = new Arco(t.getSorgente(),t.getDestinazione(),t.getDistanza(), t.getMezzoTrasporto()); 
 	    grafo.addEdge(t.getSorgente(), t.getDestinazione(), a);
-		grafo.setEdgeWeight(a, t.getDistanza());
  		}
 		
 	}	
 	
 	dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo);
+	System.out.println(dijkstra.getPath(mapCitta.get("Torino"), mapCitta.get("Roma")));
 		return String.format("Grafo creato con %d vertici e %d archi\n",
 				this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size()) ;
@@ -62,25 +60,57 @@ public class Model {
 		
 		Mezzo mezzoMigliore = null;
 		Double pesoMigliore = 99999.9;
-		
+		List<Arco> percorsoMezzo = new LinkedList<Arco>();
 		for (Mezzo m : mezzi) {
 			if (grafo.containsVertex(m.getCitta())) {
-			Double peso = getPesoComplessivo(dijkstra.getPathWeight(m.getCitta(), o.getSorgente()), m.getVelocitaMedia(), m.getCostoCarburante()*dijkstra.getPathWeight(m.getCitta(), o.getSorgente()), percentualeDistanza, percentualeVelocita, percentualeConsumo);
+				
+			for (Arco a : dijkstra.getPath(m.getCitta(), o.getSorgente()).getEdgeList()) {                       // CONTROLLO ARCHI NEL CAMMINO OUTPUT DELL'ALGORITMO.
+				Arco aTemp = new Arco(a.getSorgente(),a.getDestinazione(),a.getDistanza(),m.getTipo());          // CREO UN ARCO DEL TIPO DEL MEZZO CON LE ALTRE CARATTERISTICHE
+				if (grafo.containsEdge(aTemp) ) {                                                                // UGUALI ALL'ARCO NEL CAMMINO
+					percorsoMezzo.add(aTemp);                                                                    // SE ESISTE UN ARCO CHE VA DA LI' A LI' DEL TIPO DEL MEZZO
+					                                                                                             // LO TENGO
+				} else {
+					for (Arco arcoAlternativo : grafo.edgeSet()) {                                                    // SENNO' CONTROLLO TUTTI GLI ARCHI CHE CONOSCO E VEDO SE TROVO
+					                                                                                                  // L'ARCO CHE MI SERVE
+						if (arcoAlternativo.getSorgente().equals(a.getSorgente()) && arcoAlternativo.getDestinazione().equals(a.getDestinazione()) && arcoAlternativo.getTipo().equals(m.getTipo()) && !arcoAlternativo.getSorgente().equals(a.getDestinazione()) && !arcoAlternativo.getDestinazione().equals(a.getSorgente())) {
+				percorsoMezzo.add(arcoAlternativo);  
+				                                                                                                  // FILTRO SU SORGENTE , DESTINAZIONE E SUL TIPO DELL'ARCO (MEZZO DI TRASPORTO IN QUESTIONE NELLO STEP DEL CICLO)
+						}
+					} 	
+				}	
+			}
+			
+			if (percorsoMezzo.size() != dijkstra.getPath(m.getCitta(), o.getSorgente()).getEdgeList().size()) {  //  SE IL FLAG NON E' UGUALE ALLA LUNGHEZZA DEL PATH
+				System.out.println("Citta non raggiungibile da quel mezzo");                                     // --> NON MI HA TROVATO ALMENO UN ARCO   ---> Gestire il caso in cui 
+			}                                                                                                    // posso usare un altro mezzo 
+			
+			Double distanza = this.getDistanzaPercorso(percorsoMezzo);
+			Double peso = getPesoComplessivo(distanza, m.getVelocitaMedia(), m.getCostoCarburante()*distanza, percentualeDistanza, percentualeVelocita, percentualeConsumo);
 			if (peso<=pesoMigliore && m.getSpazioOccupato()<m.getSpazioMax() && m.getPesoOccupato()<m.getPesoMax()) {
 				mezzoMigliore = m;
 				pesoMigliore = peso;
+			} else {
+				percorsoMezzo.removeAll(percorsoMezzo);
 			}
 			}
+		//mezzoMigliore.assegnaOrdine(o);
 		}
-		
-		mezzoMigliore.assegnaOrdine(o);
+		System.out.println(percorsoMezzo+""+pesoMigliore);
 		return mezzoMigliore;
 	}
 	
 	public double getPesoComplessivo(double distanza, double velocita, double consumo, double percentualeDistanza, double percentualeVelocita, double percentualeConsumo) {
-		double pesoComplessivo = percentualeDistanza*distanza+percentualeVelocita*velocita+percentualeConsumo*consumo;       //FORMULA MATEMATICA DA STRUTTURARE PER DEFINIRE IL PESO TOTALE DEL CAMMINO PER UN MEZZO CHE TENGA CONTO DI CERTE PERCENTUALI DI INPUT PER VELOCITA, CONSUMO E DISTANZA
+		double pesoComplessivo = percentualeDistanza*distanza*percentualeVelocita*velocita*percentualeConsumo*consumo;       //FORMULA MATEMATICA DA STRUTTURARE PER DEFINIRE IL PESO TOTALE DEL CAMMINO PER UN MEZZO CHE TENGA CONTO DI CERTE PERCENTUALI DI INPUT PER VELOCITA, CONSUMO E DISTANZA
 				
-		return pesoComplessivo;		
+		return Math.round(pesoComplessivo*100.0)/100.0;		
+	}
+	
+	public double getDistanzaPercorso(List<Arco> archi) {
+		double peso = 0.0;
+		for (Arco a : archi) {
+			peso += a.getDistanza();
+		}
+		return Math.round(peso*100.0)/100.0;
 	}
 	
 	public Map<String, Citta> getMappaCitta() {
@@ -121,10 +151,7 @@ public class Model {
 		dao.addOrdine(o);
 		
 		}
-		
-	
 	
 	}
 	
-
 }

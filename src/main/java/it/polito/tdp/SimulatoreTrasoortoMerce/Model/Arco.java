@@ -25,6 +25,36 @@ public class Arco extends DefaultWeightedEdge {
 		this.sorgente=sorgente;
 		this.destinazione =destinazione;
 	}
+	
+	
+
+	/**
+	 * @return the sorgente
+	 */
+	public Citta getSorgente() {
+		return sorgente;
+	}
+
+	/**
+	 * @param sorgente the sorgente to set
+	 */
+	public void setSorgente(Citta sorgente) {
+		this.sorgente = sorgente;
+	}
+
+	/**
+	 * @return the destinazione
+	 */
+	public Citta getDestinazione() {
+		return destinazione;
+	}
+
+	/**
+	 * @param destinazione the destinazione to set
+	 */
+	public void setDestinazione(Citta destinazione) {
+		this.destinazione = destinazione;
+	}
 
 	/**
 	 * @return the distanza
@@ -53,13 +83,12 @@ public class Arco extends DefaultWeightedEdge {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(destinazione, distanza, sorgente, tipo);
 	}
 
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

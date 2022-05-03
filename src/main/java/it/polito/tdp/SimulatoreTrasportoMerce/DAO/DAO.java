@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +47,21 @@ public class DAO {
 
 			st.close();
 			conn.close();
+			/////////////////////////////////////////////////////////////////////////////
+			mapCitta.clear();
+			Citta torino = new Citta("Torino");
+			Citta milano = new Citta("Milano");
+			Citta roma = new Citta("Roma");
+			mapCitta.put(torino.getNome(), torino);
+			mapCitta.put(milano.getNome(), milano);
+			mapCitta.put(roma.getNome(), roma);
+			/////////////////////////////////////////////////////////////////////////////
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
+		
 	}
 	
 	
@@ -128,10 +139,49 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
-		
+		Tratta tomi = new Tratta(mapCitta.get("Torino"), mapCitta.get("Milano"), 100.0, "Autobus", 2);
+		Tratta miro1 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 600.0, "Autobus", 3);
+		Tratta miro2 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 100.0, "Aereo", 1);
+		tratte.clear();
+		tratte.addAll(Arrays.asList(tomi,miro1,miro2));
 		return tratte;
 	}
 	
-	
+public List<Citta> getCitta(String mezzo) {
+		
+	List<Citta> listaCittaMezzo = new ArrayList<Citta>();
+		
+		final String sql = "SELECT Partenza, Destinazione "
+				+ "FROM tratte "
+				+ "WHERE  Mezzo_di_trasporto = '"+mezzo+"' "
+				+ ";";
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				Citta c1 = new Citta(rs.getString("Partenza"));
+				Citta c2 = new Citta(rs.getString("Destinazione"));
+				
+				if (!listaCittaMezzo.contains(c1)) {
+				listaCittaMezzo.add(c1);
+				}
+				
+				if (!listaCittaMezzo.contains(c2)) {
+					listaCittaMezzo.add(c2);
+					}
+			}
+
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+		return listaCittaMezzo;
+	}
 
 }
