@@ -1,20 +1,19 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
-import java.util.Objects;
-
 public class Tratta {
-	
+
 	Citta sorgente;
 	Citta destinazione;
 	double distanza;
 	String mezzoTrasporto;
 	int emissioni;
-	
+
 	public Tratta(Citta sorgente, Citta destinazione, double distanza, String mezzoTrasporto, int emissioni) {
 		this.sorgente = sorgente;
 		this.destinazione = destinazione;
 		this.distanza = distanza;
 		this.mezzoTrasporto = mezzoTrasporto;
+		this.emissioni = emissioni;
 	}
 
 	/**
@@ -87,17 +86,10 @@ public class Tratta {
 		this.emissioni = emissioni;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Tratta [sorgente=" + sorgente + ", destinazione=" + destinazione + ", distanza=" + distanza
 				+ ", mezzoTrasporto=" + mezzoTrasporto + ", emissioni=" + emissioni + "]";
 	}
 
-	
-	
-	
-	
-	
 }
-

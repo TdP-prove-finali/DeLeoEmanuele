@@ -47,7 +47,7 @@ public class DAO {
 
 			st.close();
 			conn.close();
-			/////////////////////////////////////////////////////////////////////////////
+	/*		/////////////////////////////////////////////////////////////////////////////
 			mapCitta.clear();
 			Citta torino = new Citta("Torino");
 			Citta milano = new Citta("Milano");
@@ -55,7 +55,7 @@ public class DAO {
 			mapCitta.put(torino.getNome(), torino);
 			mapCitta.put(milano.getNome(), milano);
 			mapCitta.put(roma.getNome(), roma);
-			/////////////////////////////////////////////////////////////////////////////
+	*/		/////////////////////////////////////////////////////////////////////////////
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -139,11 +139,11 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
-		Tratta tomi = new Tratta(mapCitta.get("Torino"), mapCitta.get("Milano"), 100.0, "Autobus", 2);
-		Tratta miro1 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 600.0, "Autobus", 3);
-		Tratta miro2 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 100.0, "Aereo", 1);
+	//	Tratta tomi = new Tratta(mapCitta.get("Torino"), mapCitta.get("Milano"), 100.0, "Autobus", 2);
+	/*	Tratta miro1 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 600.0, "Autobus", 3);
+		Tratta miro2 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"), 600.0, "Aereo", 1);
 		tratte.clear();
-		tratte.addAll(Arrays.asList(tomi,miro1,miro2));
+		tratte.addAll(Arrays.asList(tomi,miro1,miro2));*/
 		return tratte;
 	}
 	
