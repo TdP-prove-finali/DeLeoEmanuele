@@ -3,7 +3,7 @@ package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Ordine {
+public class Ordine implements Comparable<Ordine>{
 	
 	int id;
 	Citta sorgente;
@@ -117,6 +117,13 @@ public class Ordine {
 		
 		return "Ordine [id=" + id + ", sorgente=" + sorgente + ", destinazione=" + destinazione + ", peso=" + peso
 				+ ", volume=" + volume + ", data="+data.getDayOfMonth()+"-"+data.getMonthValue()+"-"+data.getYear()+" "+data.getHour()+":"+data.getMinute()+":"+data.getSecond()+"]";
+	}
+
+
+	@Override
+	public int compareTo(Ordine other) {
+	
+		return this.data.compareTo(other.data);
 	}
 	
 	

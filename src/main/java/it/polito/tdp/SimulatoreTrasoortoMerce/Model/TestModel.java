@@ -16,7 +16,9 @@ public class TestModel {
 		m.aggiungiMezzo(mezzo2);
 		m.generaMezzo("Aereo", 2.3, 3.5, 5.5, 1.2);
      	System.out.println(m.creaGrafo());
-		
+		m.simulaOrdini(25, 2, LocalDateTime.now(),8);
+		m.caricaOrdini();
+		System.out.println(m.getMappaOrdini().values().toString());
 		//Ordine o = new Ordine (1,m.getMappaCitta().get("Bolzano - Bozen"),m.getMappaCitta().get("Trapani"), 0.9, 0.6, LocalDateTime.now());
 		
 		//Mezzo migliore = m.getMezzoMigliore(o, m.getListaMezzi(), 0.7, 0.2, 0.1);
@@ -25,4 +27,3 @@ public class TestModel {
 	}
 
 }
-
