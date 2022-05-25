@@ -35,19 +35,6 @@ public class Mezzo {
 		ordiniMezzo = new LinkedList<Ordine>();
 	}
 
-	public void cammino(Arco arco, int ora) {
-		this.citta = (Citta) arco.getDestinazione();
-		this.setDataMezzo(dataMezzo.plusSeconds(ora));
-		Collections.sort(ordiniMezzo);
-		for (Ordine ordineMezzo : ordiniMezzo) {
-			ordineMezzo.setDataOra(ordineMezzo.getDataOra().plusSeconds(ora));
-			if (ordineMezzo.getSorgente().equals((Citta)arco.getDestinazione())) {
-				System.out.println("Preso ordine "+ordineMezzo.getId()+" il "+ordineMezzo.getDataOra());
-			}
-			
-		}
-	}
-
 	/**
 	 * @return the id
 	 */

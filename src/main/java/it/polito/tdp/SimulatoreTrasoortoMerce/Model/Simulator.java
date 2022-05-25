@@ -305,6 +305,10 @@ public class Simulator {
 
 		}
 	}
+	
+	public void percorsoConsegnaOrdini(Citta start, Mezzo mezzo) {
+		
+	}
 
 	/**
 	 * @param nOrdiniGiornalieri the nOrdiniGiornalieri to set
