@@ -1,27 +1,19 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-public class Event implements Comparable<Event>{
+public class Event implements Comparable<Event> {
 
 	public enum EventType {
-		NUOVO_ORDINE,  // Valutare l'insermento di un evento di tipo "organizzazione_merci"
-		ATTESA,
-		TIMEOUT,
-		CONSEGNA_ORDINE,
-		ORDINE_CONSEGNATO
+		NUOVO_ORDINE, // Valutare l'insermento di un evento di tipo "organizzazione_merci"
+	   TIMEOUT, ORDINE_CONSEGNATO
 	}
-	
+
 	private Ordine ordine;
 	private LocalDateTime istante;
 	private EventType tipo;
-	
-	@Override
-	public int compareTo(Event other) {
-		return this.istante.compareTo(other.istante);
-	}
-	
-	
+
 	public Event(Ordine ordine, EventType tipo, LocalDateTime istante) {
 		super();
 		this.ordine = ordine;
@@ -57,7 +49,6 @@ public class Event implements Comparable<Event>{
 		this.tipo = tipo;
 	}
 
-
 	/**
 	 * @return the ordine
 	 */
@@ -65,14 +56,25 @@ public class Event implements Comparable<Event>{
 		return ordine;
 	}
 
-
 	/**
 	 * @param ordine the ordine to set
 	 */
 	public void setOrdine(Ordine ordine) {
 		this.ordine = ordine;
 	}
+
+	@Override
+	public int compareTo(Event other) {
+		// TODO Auto-generated method stub
+		return this.istante.compareTo(other.istante);
+	}
+
+	@Override
+	public String toString() {
+		return "Event [ordine=" + ordine.getId() + ", istante=" + istante + ", tipo=" + tipo + "]";
+	}
+
+
 	
-	
-	
+
 }

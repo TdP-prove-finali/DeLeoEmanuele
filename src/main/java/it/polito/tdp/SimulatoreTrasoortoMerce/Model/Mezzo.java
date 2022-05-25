@@ -1,11 +1,14 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.PriorityQueue;
 
 public class Mezzo {
-	
+
 	int id;
 	String tipo;
 	Citta citta;
@@ -16,10 +19,10 @@ public class Mezzo {
 	double pesoOccupato;
 	double spazioOccupato;
 	List<Ordine> ordiniMezzo;
+	LocalDateTime dataMezzo;
 
-	
-	
-	public Mezzo(int id, String tipo, double pesoMax, double spazioMax, double velocitaMedia, double costoCarburante, Citta citta) {
+	public Mezzo(int id, String tipo, double pesoMax, double spazioMax, double velocitaMedia, double costoCarburante,
+			Citta citta) {
 		this.id = id;
 		this.tipo = tipo;
 		this.pesoMax = pesoMax;
@@ -27,11 +30,23 @@ public class Mezzo {
 		this.velocitaMedia = velocitaMedia;
 		this.costoCarburante = costoCarburante;
 		this.citta = citta;
-		this.pesoOccupato=0.0;
-		this.spazioOccupato=0.0;
+		this.pesoOccupato = 0.0;
+		this.spazioOccupato = 0.0;
 		ordiniMezzo = new LinkedList<Ordine>();
 	}
 
+	public void cammino(Arco arco, int ora) {
+		this.citta = (Citta) arco.getDestinazione();
+		this.setDataMezzo(dataMezzo.plusSeconds(ora));
+		Collections.sort(ordiniMezzo);
+		for (Ordine ordineMezzo : ordiniMezzo) {
+			ordineMezzo.setDataOra(ordineMezzo.getDataOra().plusSeconds(ora));
+			if (ordineMezzo.getSorgente().equals((Citta)arco.getDestinazione())) {
+				System.out.println("Preso ordine "+ordineMezzo.getId()+" il "+ordineMezzo.getDataOra());
+			}
+			
+		}
+	}
 
 	/**
 	 * @return the id
@@ -40,14 +55,12 @@ public class Mezzo {
 		return id;
 	}
 
-
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
-
 
 	/**
 	 * @return the tipo
@@ -56,14 +69,12 @@ public class Mezzo {
 		return tipo;
 	}
 
-
 	/**
 	 * @param tipo the tipo to set
 	 */
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-
 
 	/**
 	 * @return the pesoMax
@@ -72,14 +83,12 @@ public class Mezzo {
 		return pesoMax;
 	}
 
-
 	/**
 	 * @param pesoMax the pesoMax to set
 	 */
 	public void setPesoMax(double pesoMax) {
 		this.pesoMax = pesoMax;
 	}
-
 
 	/**
 	 * @return the spazioMax
@@ -88,14 +97,12 @@ public class Mezzo {
 		return spazioMax;
 	}
 
-
 	/**
 	 * @param spazioMax the spazioMax to set
 	 */
 	public void setSpazioMax(double spazioMax) {
 		this.spazioMax = spazioMax;
 	}
-
 
 	/**
 	 * @return the velocitaMedia
@@ -104,14 +111,12 @@ public class Mezzo {
 		return velocitaMedia;
 	}
 
-
 	/**
 	 * @param velocitaMedia the velocitaMedia to set
 	 */
 	public void setVelocitaMedia(double velocitaMedia) {
 		this.velocitaMedia = velocitaMedia;
 	}
-
 
 	/**
 	 * @return the costoCarburante
@@ -120,14 +125,12 @@ public class Mezzo {
 		return costoCarburante;
 	}
 
-
 	/**
 	 * @param costoCarburante the costoCarburante to set
 	 */
 	public void setCostoCarburante(double costoCarburante) {
 		this.costoCarburante = costoCarburante;
 	}
-
 
 	/**
 	 * @return the citta
@@ -136,15 +139,12 @@ public class Mezzo {
 		return citta;
 	}
 
-
 	/**
 	 * @param citta the citta to set
 	 */
 	public void setCitta(Citta citta) {
 		this.citta = citta;
 	}
-
-	
 
 	/**
 	 * @return the pesoOccupato
@@ -153,19 +153,24 @@ public class Mezzo {
 		return pesoOccupato;
 	}
 
-
 	/**
 	 * @param pesoOccupato the pesoOccupato to set
 	 */
-	public void assegnaOrdine(Ordine o) {
+	public boolean assegnaOrdine(Ordine o) {
+		this.spazioOccupato = this.spazioOccupato + o.getVolume();
+		this.pesoOccupato = this.pesoOccupato + o.getPeso();
+		if (spazioOccupato > this.spazioMax || pesoOccupato > this.pesoMax) {
+			return false;
+		}
+
 		ordiniMezzo.add(o);
-	    this.spazioOccupato = this.spazioOccupato+o.getVolume();
-	    this.pesoOccupato = this.pesoOccupato+o.getPeso();
-		
+		return true;
 	}
 
 	public void scaricaMerce(Ordine o) {
 		ordiniMezzo.remove(o);
+		this.spazioOccupato = this.spazioOccupato - o.getVolume();
+		this.pesoOccupato = this.pesoOccupato - o.getPeso();
 	}
 
 	/**
@@ -175,12 +180,50 @@ public class Mezzo {
 		return spazioOccupato;
 	}
 
+	/**
+	 * @return the ordiniMezzo
+	 */
+	public List<Ordine> getOrdiniMezzo() {
+		return ordiniMezzo;
+	}
+
+	/**
+	 * @param ordiniMezzo the ordiniMezzo to set
+	 */
+	public void setOrdiniMezzo(List<Ordine> ordiniMezzo) {
+		this.ordiniMezzo = ordiniMezzo;
+	}
+
+	public boolean areTuttiGliOrdiniInTimeout() {
+
+		for (Ordine o : this.ordiniMezzo) {
+
+			if (o.isTimeout() == false) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return the dataMezzo
+	 */
+	public LocalDateTime getDataMezzo() {
+		return dataMezzo;
+	}
+
+	/**
+	 * @param dataMezzo the dataMezzo to set
+	 */
+	public void setDataMezzo(LocalDateTime dataMezzo) {
+		this.dataMezzo = dataMezzo;
+	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -194,13 +237,10 @@ public class Mezzo {
 		return id == other.id;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Mezzo [id=" + id + ", tipo=" + tipo + ", pesoMax=" + pesoMax + ", spazioMax=" + spazioMax
 				+ ", velocitaMedia=" + velocitaMedia + ", costoCarburante=" + costoCarburante + "]";
 	}
-	
-	
 
 }

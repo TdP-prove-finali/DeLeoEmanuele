@@ -3,30 +3,33 @@ package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Ordine implements Comparable<Ordine>{
-	
+public class Ordine implements Comparable<Ordine> {
+
 	int id;
 	Citta sorgente;
 	Citta destinazione;
 	double peso;
 	double volume;
-	LocalDateTime data;
-	
-	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, LocalDateTime data) {
-		
+	LocalDateTime dataOra;
+	boolean timeout;
+	Citta prossimaCitta;
+
+	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, LocalDateTime dataOra) {
+
 		this.id = id;
 		this.sorgente = sorgente;
 		this.destinazione = destinazione;
 		this.peso = peso;
 		this.volume = volume;
-		this.data=data;
+		this.dataOra=dataOra;
+		this.timeout = false;
+		prossimaCitta=null;
+		
 	}
-
 
 	public int getId() {
 		return this.id;
 	}
-
 
 	/**
 	 * @param id the id to set
@@ -91,8 +94,20 @@ public class Ordine implements Comparable<Ordine>{
 		this.volume = volume;
 	}
 	
-	public LocalDateTime getData() {
-		return this.data;
+	
+	
+	/**
+	 * @return the dataOra
+	 */
+	public LocalDateTime getDataOra() {
+		return dataOra;
+	}
+
+	/**
+	 * @param dataOra the dataOra to set
+	 */
+	public void setDataOra(LocalDateTime dataOra) {
+		this.dataOra = dataOra;
 	}
 
 	@Override
@@ -113,19 +128,46 @@ public class Ordine implements Comparable<Ordine>{
 	}
 
 	@Override
-	public String toString() {
-		
-		return "Ordine [id=" + id + ", sorgente=" + sorgente + ", destinazione=" + destinazione + ", peso=" + peso
-				+ ", volume=" + volume + ", data="+data.getDayOfMonth()+"-"+data.getMonthValue()+"-"+data.getYear()+" "+data.getHour()+":"+data.getMinute()+":"+data.getSecond()+"]";
-	}
-
-
-	@Override
 	public int compareTo(Ordine other) {
-	
-		return this.data.compareTo(other.data);
+		
+		if (this.isTimeout()==true && other.isTimeout()==false) {
+			return 1;
+		}
+		
+		if (this.isTimeout()==false && other.isTimeout()==true) {
+			return -1;
+		}
+		return this.dataOra.compareTo(other.dataOra);
 	}
-	
+
+	/**
+	 * @return the timeout
+	 */
+	public boolean isTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * @param timeout the timeout to set
+	 */
+	public void setTimeout(boolean timeout) {
+		this.timeout = timeout;
+	}
+
+	/**
+	 * @return the prossimaCitta
+	 */
+	public Citta getProssimaCitta() {
+		return prossimaCitta;
+	}
+
+	/**
+	 * @param prossimaCitta the prossimaCitta to set
+	 */
+	public void setProssimaCitta(Citta prossimaCitta) {
+		this.prossimaCitta = prossimaCitta;
+	}
+
 	
 	
 

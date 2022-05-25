@@ -1,6 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
-public class Citta {
+public class Citta implements Comparable<Citta>{
 
 String nome;
 
@@ -30,6 +30,13 @@ public void setNome(String nome) {
 @Override
 public String toString() {
 	return "" + nome + "";
+}
+
+
+@Override
+public int compareTo(Citta o) {
+	
+	return this.nome.compareTo(o.getNome());
 }
 
 

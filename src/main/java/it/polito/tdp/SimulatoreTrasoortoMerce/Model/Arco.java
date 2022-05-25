@@ -1,5 +1,7 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
+import java.util.Objects;
+
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class Arco extends DefaultWeightedEdge {
@@ -51,6 +53,31 @@ public class Arco extends DefaultWeightedEdge {
 				+ tipo + "]";
 	}
 
+	public Object getSorgente() {
+		return this.getSource();
+	}
+	
+	public Object getDestinazione() {
+		return this.getTarget();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(distanza, tipo);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Arco other = (Arco) obj;
+		return Double.doubleToLongBits(distanza) == Double.doubleToLongBits(other.distanza)
+				&& Objects.equals(tipo, other.tipo);
+	}
 	
 	
 }

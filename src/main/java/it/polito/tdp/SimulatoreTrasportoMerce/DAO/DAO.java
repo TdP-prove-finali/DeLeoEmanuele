@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +57,12 @@ public class DAO {
 
 	public void addOrdine(Ordine o) {
 
-		LocalDateTime date = o.getData();
 		try {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
 			statement.executeUpdate("INSERT INTO ordini (Sorgente, Destinazione, Peso, Volume, Data) " + "VALUES ('"
 				      + o.getSorgente().getNome() + "','" + o.getDestinazione().getNome() + "','"
-					+ o.getPeso() + "','" + o.getVolume() + "','" + Timestamp.valueOf(date) + "')");
+					+ o.getPeso() + "','" + o.getVolume() + "','"+Timestamp.valueOf(o.getDataOra())+"');");
 			statement.close();
 			conn.close();
 
@@ -102,7 +103,7 @@ public class DAO {
 		}
 	}
 
-	public List<Tratta> getTratte(List<Mezzo> mezzi, Map<String, Citta> mapCitta) {
+	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) {
 
 		List<Tratta> tratte = new ArrayList<Tratta>();
 		final String sql = "SELECT* FROM tratte;";
