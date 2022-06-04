@@ -11,25 +11,30 @@ public class TestSimulator {
 
 		Model m = new Model();
 		Simulator sim = new Simulator();
+		m.clearTableOrdini();
+		m.clearTableOrdiniConsegnati();
+		
 
 		// impostazione parametri
 
-		m.generaMezzo("Autobus", 2.3, 3.5, 5.5, 1.2);
-		sim.setnOrdiniGiornalieri(50);
-		sim.setnGiorni(2);
+		m.generaMezzo("Aereo", 500, 500, 400, 8);
+		m.generaMezzo("Autobus", 300, 300, 100, 8);
+		sim.setnOrdiniGiornalieri(1000);
+		sim.setnGiorni(4);
 		sim.setDataInizio(LocalDate.of(2022, 5, 13));
-		sim.setOraInizio(10, 00);
-		sim.setOraFine(18, 00);
-		sim.setTimeout(1);
+		sim.setOraInizio(8, 00);
+		sim.setOraFine(16, 00);
+		sim.setTimeout(2);
 		// esecuzione
 
 		// output
 		System.out.println(m.creaGrafo());
-		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(),
-				m.getMetropoli());
 
+		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(), m.getMetropoli());
 		sim.run();
-System.out.println(sim.getnTir());
+		System.out.println(sim.getnTir() + " " + sim.getNnAerei());
+
+		System.out.println("Ordini Completati: " + sim.getnOrdiniCompletati());
 	}
 
 }

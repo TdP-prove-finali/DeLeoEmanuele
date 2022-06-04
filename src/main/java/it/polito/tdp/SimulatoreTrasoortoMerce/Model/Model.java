@@ -23,7 +23,6 @@ public class Model {
 	public Graph<Citta, Arco> grafo;
 	DAO dao;
 	Map<String, Mezzo> mapMezziConSpecifiche;
-	List<Mezzo> mezzi;
 	List<Citta> listaMetropoli;
 	Map<String, Citta> mapCitta;
 	Map<Citta, List<Ordine>> mappaOrdiniConPartenza;
@@ -31,8 +30,7 @@ public class Model {
 
 	public Model() {
 		dao = new DAO();
-		mezzi = new ArrayList<Mezzo>();
-		listaMetropoli = new ArrayList<Citta>();
+		listaMetropoli = new ArrayList<Citta>(); // METROPOLI : CITTA' IN CUI RISIEDONO GLI AEROPORTI
 		mapMezziConSpecifiche = new TreeMap<String, Mezzo>();
 		this.mapCitta = new TreeMap<String, Citta>();
 		dao.getCitta(mapCitta);
@@ -52,10 +50,16 @@ public class Model {
 		this.grafo = new DirectedWeightedMultigraph<Citta, Arco>(Arco.class);
 		Graphs.addAllVertices(this.grafo, mapCitta.values());
 		for (Tratta t : dao.getTratte(mapMezziConSpecifiche.values(), mapCitta)) {
-			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) {
+			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) { // L'ARCO ESTENDE
+																										// IL DEFAULT
+																										// WEIGHTED EDGE
+																										// E CONSERVA IL
+																										// TIPO DI MEZZO
 
-				arco = grafo.addEdge(t.getSorgente(), t.getDestinazione());
-				arco.setDistanza(t.getDistanza());
+				arco = grafo.addEdge(t.getSorgente(), t.getDestinazione()); // OGNI ARCO E' PESATO IN BASE AL PESO
+																			// COMPLESSIVO
+				arco.setDistanza(t.getDistanza()); // CHE TIENE TRACCIA DELLA VELOCITA' E DEL COSTO DEL CARBURANTE DEL
+													// VEICOLO IN QUESTIONE
 				arco.setTipo(t.getMezzoTrasporto());
 				grafo.setEdgeWeight(arco,
 						this.getPesoComplessivo(t.getDistanza(),
@@ -65,37 +69,16 @@ public class Model {
 			}
 
 		}
-		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo);
-		
-		 System.out.println(dijkstra.getPath(mapCitta.get("Avellino"),
-		 mapCitta.get("Pistoia")));
-		// System.out.println(dijkstra.getPath(mapCitta.get("Torino"),
-		// mapCitta.get("Roma")).getVertexList());
-		// System.out.println(dijkstra.getPathWeight(mapCitta.get("Torino"),
-		// mapCitta.get("Roma")));
+		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo); // L'ALGORITMO DI DIJKSTRA SI BASERA' SUI SINGOLI PESI
+
 		return String.format("Grafo creato con %d vertici e %d archi\n", this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size());
 
 	}
 
-	public void aggiungiMezzo(Mezzo m) {
-		// m.setId(mezzi.size() + 1);
-		mezzi.add(m);
-	}
+	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante) {
 
-	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante) { // SE
-																									// NON
-																									// SI
-																									// SCELGONO
-																									// EMISSIONI,
-																									// EMISS
-																									// = 1
-		double pesoComplessivo = distanza * velocita * costoCarburante; // FORMULA MATEMATICA DA STRUTTURARE
-																		// PER DEFINIRE IL PESO TOTALE DEL
-																		// CAMMINO PER UN MEZZO CHE TENGA
-																		// CONTO DI CERTE PERCENTUALI DI
-																		// INPUT PER VELOCITA, CONSUMO E
-																		// DISTANZA
+		double pesoComplessivo = distanza * velocita * costoCarburante; // PESO UNICO PER OGNI PARAMETRO
 
 		return Math.round(pesoComplessivo * 100.0) / 100.0;
 	}
@@ -104,18 +87,24 @@ public class Model {
 		return this.mapCitta;
 	}
 
-	public void generaMezzo(String tipo, double pesoMax, double spazioMax, double velocitaMedia,
-			double costoCarburante) {
+	public void generaMezzo(String tipo, double pesoMax, double spazioMax, double velocitaMedia, // METODO PER
+																									// SPECIFICARE I
+																									// PARAMETRI DI OGNI
+																									// MEZZO (UNIVOCI
+																									// PER OGNI MEZZO
+																									// UNA VOLTA CREATI
+																									// ---> L'IDEA E' DI
+																									// UTILIZZARE TIR
+																									// (nel db
+																									// "Autobus") E
+																									// AEREI
+			double costoCarburante) { // PER TENERE TRACCIA USO UNA MAPPA < "tipo veicolo" , veicolo >
 		Citta c = null;
 		Mezzo nuovo = new Mezzo(mapMezziConSpecifiche.size(), tipo, pesoMax, spazioMax, velocitaMedia, costoCarburante,
 				c);
 		mapMezziConSpecifiche.remove(tipo);
 		mapMezziConSpecifiche.put(tipo, nuovo);
 		System.out.println("mezzo aggiunto correttamente");
-	}
-
-	public List<Mezzo> getListaMezzi() {
-		return this.mezzi;
 	}
 
 	public Map<String, Mezzo> getMezziConSpecifiche() {
@@ -131,7 +120,7 @@ public class Model {
 		dao.getOrdini(mappaOrdiniConPartenza, mapCitta);
 
 	}
-	
+
 	public DijkstraShortestPath<Citta, Arco> getDijkstra() {
 		return this.dijkstra;
 	}
@@ -139,4 +128,13 @@ public class Model {
 	public Map<Citta, List<Ordine>> getMappaOrdini() {
 		return this.mappaOrdiniConPartenza;
 	}
+
+	public void clearTableOrdini() {
+		dao.clearTableOrdini();
+	}
+
+	public void clearTableOrdiniConsegnati() {
+		dao.clearTableOrdiniConsegnati();
+	}
+
 }

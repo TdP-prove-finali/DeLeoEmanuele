@@ -21,7 +21,7 @@ import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
 
 public class DAO {
 
-	public void getCitta(Map<String, Citta> mapCitta) {
+	public void getCitta(Map<String, Citta> mapCitta) {                                      // RESTITUISCE TUTTE LE CITTA' 
 
 		final String sql = "SELECT Partenza, Destinazione " + "FROM tratte "
 				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus' OR Mezzo_di_trasporto = 'Treno' "
@@ -47,7 +47,7 @@ public class DAO {
 
 			st.close();
 			conn.close();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
@@ -55,14 +55,14 @@ public class DAO {
 
 	}
 
-	public void addOrdine(Ordine o) {
+	public void addOrdine(Ordine o) {                                                             // AGGIUNGE ORDINE SIMULATO NEL DB
 
 		try {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
 			statement.executeUpdate("INSERT INTO ordini (Sorgente, Destinazione, Peso, Volume, Data) " + "VALUES ('"
-				      + o.getSorgente().getNome() + "','" + o.getDestinazione().getNome() + "','"
-					+ o.getPeso() + "','" + o.getVolume() + "','"+Timestamp.valueOf(o.getDataOra())+"');");
+					+ o.getSorgente().getNome() + "','" + o.getDestinazione().getNome() + "','" + o.getPeso() + "','"
+					+ o.getVolume() + "','" + Timestamp.valueOf(o.getDataOra()) + "');");
 			statement.close();
 			conn.close();
 
@@ -73,7 +73,7 @@ public class DAO {
 
 	}
 
-	public void getOrdini(Map<Citta, List<Ordine>> mapOrdini, Map<String,Citta> mapCitta) {
+	public void getOrdini(Map<Citta, List<Ordine>> mapOrdini, Map<String, Citta> mapCitta) {       // LEGGE GLI ORDINI SIMULATI DAL DB
 
 		final String sql = "SELECT* FROM ordini ORDER BY Data;";
 
@@ -83,15 +83,17 @@ public class DAO {
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-			Ordine o = new Ordine(rs.getInt("ID"), mapCitta.get(rs.getString("Sorgente")), mapCitta.get(rs.getString("Destinazione")), rs.getDouble("Peso"), rs.getDouble("Volume"), rs.getTimestamp("Data").toLocalDateTime());
-			
-			if (!mapOrdini.containsKey(o.getSorgente())) {
-				List<Ordine> listaOrdini = new LinkedList<Ordine>();
-				listaOrdini.add(o);
-				mapOrdini.put(o.getSorgente(), listaOrdini);
-			} else {
-				mapOrdini.get(o.getSorgente()).add(o);
-			} 
+				Ordine o = new Ordine(rs.getInt("ID"), mapCitta.get(rs.getString("Sorgente")),
+						mapCitta.get(rs.getString("Destinazione")), rs.getDouble("Peso"), rs.getDouble("Volume"),
+						rs.getTimestamp("Data").toLocalDateTime());
+
+				if (!mapOrdini.containsKey(o.getSorgente())) {
+					List<Ordine> listaOrdini = new LinkedList<Ordine>();
+					listaOrdini.add(o);
+					mapOrdini.put(o.getSorgente(), listaOrdini);
+				} else {
+					mapOrdini.get(o.getSorgente()).add(o);
+				}
 			}
 
 			st.close();
@@ -103,7 +105,7 @@ public class DAO {
 		}
 	}
 
-	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) {
+	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) {        // RESTITUISCE LE TRATTE DAL DB PER I MEZZI SPECIFICATI 
 
 		List<Tratta> tratte = new ArrayList<Tratta>();
 		final String sql = "SELECT* FROM tratte;";
@@ -118,7 +120,7 @@ public class DAO {
 				for (Mezzo m : mezzi) {
 
 					if (m.getTipo().compareTo(rs.getString("Mezzo_di_trasporto")) == 0) {
-						
+
 						Tratta trattaInversa = new Tratta(mapCitta.get(rs.getString("Destinazione")),
 								mapCitta.get(rs.getString("Partenza")),
 								Double.parseDouble(rs.getString("Distanza_km").replace(",", ".")),
@@ -140,15 +142,55 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
-		// Tratta tomi = new Tratta(mapCitta.get("Torino"), mapCitta.get("Milano"),
-		// 100.0, "Autobus", 2);
-		/*
-		 * Tratta miro1 = new Tratta(mapCitta.get("Milano"), mapCitta.get("Roma"),
-		 * 600.0, "Autobus", 3); Tratta miro2 = new Tratta(mapCitta.get("Milano"),
-		 * mapCitta.get("Roma"), 600.0, "Aereo", 1); tratte.clear();
-		 * tratte.addAll(Arrays.asList(tomi,miro1,miro2));
-		 */
+	
 		return tratte;
+	}
+
+	public void clearTableOrdini() {                                                // METODI PER PULIRE LE TABELLE
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			Statement statement = conn.createStatement();
+			statement.executeUpdate("TRUNCATE TABLE ordini;");
+			statement.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+	}
+
+	public void clearTableOrdiniConsegnati() {
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			Statement statement = conn.createStatement();
+			statement.executeUpdate("TRUNCATE TABLE ordini_consegnati;");
+			statement.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+	}
+	
+	public void addOrdineConsegnato(Ordine o) {                                   // AGGIUNGE ORDINE CONSEGNATO SUL DB
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			Statement statement = conn.createStatement();
+			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data) " + "VALUES ('"
+					+ o.getId() + "','" + o.getDestinazione() + "','" + o.getDataOra() + "');");
+			statement.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+
 	}
 
 }

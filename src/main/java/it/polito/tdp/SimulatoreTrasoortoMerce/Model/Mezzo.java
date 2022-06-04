@@ -11,7 +11,7 @@ public class Mezzo {
 
 	int id;
 	String tipo;
-	Citta citta;
+	Citta citta; 
 	double pesoMax;
 	double spazioMax;
 	double velocitaMedia;
@@ -20,6 +20,7 @@ public class Mezzo {
 	double spazioOccupato;
 	List<Ordine> ordiniMezzo;
 	LocalDateTime dataMezzo;
+	Citta destinazione; // SOLO PER AEREI, ho evitato di fare sottoclassi
 
 	public Mezzo(int id, String tipo, double pesoMax, double spazioMax, double velocitaMedia, double costoCarburante,
 			Citta citta) {
@@ -33,6 +34,7 @@ public class Mezzo {
 		this.pesoOccupato = 0.0;
 		this.spazioOccupato = 0.0;
 		ordiniMezzo = new LinkedList<Ordine>();
+		destinazione = null;
 	}
 
 	/**
@@ -143,21 +145,24 @@ public class Mezzo {
 	/**
 	 * @param pesoOccupato the pesoOccupato to set
 	 */
-	public boolean assegnaOrdine(Ordine o) {
+	public boolean assegnaOrdine(Ordine o) {                            //METODO PER CARICARE I MEZZI E SAPERE SE UN MEZZO E' PIENO 
 		this.spazioOccupato = this.spazioOccupato + o.getVolume();
 		this.pesoOccupato = this.pesoOccupato + o.getPeso();
 		if (spazioOccupato > this.spazioMax || pesoOccupato > this.pesoMax) {
+			this.spazioOccupato = this.spazioOccupato - o.getVolume();
+			this.pesoOccupato = this.pesoOccupato - o.getPeso();
 			return false;
 		}
 
 		ordiniMezzo.add(o);
+
 		return true;
 	}
 
-	public void scaricaMerce(Ordine o) {
-		ordiniMezzo.remove(o);
-		this.spazioOccupato = this.spazioOccupato - o.getVolume();
-		this.pesoOccupato = this.pesoOccupato - o.getPeso();
+	public void scaricaMerce() {
+		ordiniMezzo.clear();
+		this.spazioOccupato = 0.0;
+		this.pesoOccupato = 0.0;
 	}
 
 	/**
@@ -207,6 +212,27 @@ public class Mezzo {
 		this.dataMezzo = dataMezzo;
 	}
 
+	/**
+	 * @return the destinazione
+	 */
+	public Citta getDestinazione() {
+		return destinazione;
+	}
+
+	/**
+	 * @param destinazione the destinazione to set
+	 */
+	public void setDestinazione(Citta destinazione) {
+		this.destinazione = destinazione;
+	}
+
+	public LocalDateTime getDataPartenza() {
+		if (!this.ordiniMezzo.isEmpty()) {
+		return this.ordiniMezzo.get(ordiniMezzo.size() - 1).getDataOra();
+		}
+		return this.dataMezzo;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -228,6 +254,11 @@ public class Mezzo {
 	public String toString() {
 		return "Mezzo [id=" + id + ", tipo=" + tipo + ", pesoMax=" + pesoMax + ", spazioMax=" + spazioMax
 				+ ", velocitaMedia=" + velocitaMedia + ", costoCarburante=" + costoCarburante + "]";
+	}
+
+	public void consegnaOrdini(List<Ordine> ordiniConsegnati) {
+		ordiniMezzo.removeAll(ordiniConsegnati);
+		
 	}
 
 }

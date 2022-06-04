@@ -12,7 +12,7 @@ public class Ordine implements Comparable<Ordine> {
 	double volume;
 	LocalDateTime dataOra;
 	boolean timeout;
-	Citta prossimaCitta;
+	Citta prossimaCitta;           // CITTA A CUI FA RIFERIMENTO PER PRENDERE UN AEREO ( ESEMPIO: un ordine da Alessandria a napoli che deve passare per Torino
 
 	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, LocalDateTime dataOra) {
 
@@ -21,10 +21,10 @@ public class Ordine implements Comparable<Ordine> {
 		this.destinazione = destinazione;
 		this.peso = peso;
 		this.volume = volume;
-		this.dataOra=dataOra;
+		this.dataOra = dataOra;
 		this.timeout = false;
-		prossimaCitta=null;
-		
+		prossimaCitta = null;
+
 	}
 
 	public int getId() {
@@ -93,9 +93,7 @@ public class Ordine implements Comparable<Ordine> {
 	public void setVolume(double volume) {
 		this.volume = volume;
 	}
-	
-	
-	
+
 	/**
 	 * @return the dataOra
 	 */
@@ -129,12 +127,12 @@ public class Ordine implements Comparable<Ordine> {
 
 	@Override
 	public int compareTo(Ordine other) {
-		
-		if (this.isTimeout()==true && other.isTimeout()==false) {
+
+		if (this.isTimeout() == true && other.isTimeout() == false) {
 			return 1;
 		}
-		
-		if (this.isTimeout()==false && other.isTimeout()==true) {
+
+		if (this.isTimeout() == false && other.isTimeout() == true) {
 			return -1;
 		}
 		return this.dataOra.compareTo(other.dataOra);
@@ -167,8 +165,5 @@ public class Ordine implements Comparable<Ordine> {
 	public void setProssimaCitta(Citta prossimaCitta) {
 		this.prossimaCitta = prossimaCitta;
 	}
-
-	
-	
 
 }
