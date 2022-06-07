@@ -493,6 +493,7 @@ public class Simulator {
 				ordineMezzo.setSorgente(mezzo.getCitta());
 				System.out.println("QUESTO ORDINE PRENDE L'AEREO : ID: " + ordineMezzo.getId() + "per "
 						+ ordineMezzo.getProssimaCitta());
+				ordiniConsegnati.add(ordineMezzo);
 
 				if (!ordiniVoli.containsKey(mezzo.getCitta())) {
 					ordiniVoli.put(mezzo.getCitta(), new PriorityQueue<Ordine>());
@@ -689,7 +690,6 @@ public class Simulator {
 		}
 
 		if (mezzoTemporaneo == null) {
-			mapMezziConSpecifiche.get("Autobus").setId(i);
 			mappaMezzi.get(metropoli).add(new Mezzo(i, "Autobus", 100.0, 100.0, 80.0, 8.0, metropoli));
 			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setId(i);
 			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setCitta(metropoli);
