@@ -1,34 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.emanueledeleo.SimulatoreDiTrasportoMerce.FXMLController">
-   <center>
-      <VBox prefHeight="609.0" prefWidth="819.0" BorderPane.alignment="CENTER" />
-   </center>
-   <left>
-      <TextArea prefHeight="561.0" prefWidth="265.0" text="&#10;                ISTRUZIONI&#10;&#10;&#10;1. Inserire i parametri  dei &#10;   mezzi desiderati e cliccare&#10;   su AGGIUNGI&#10;&#10;&#10;2. Cliccare su CREA GRAFO&#10;&#10;&#10;3. Inserire i parametri e &#10;    lanciare la simulazione &#10;    cliccando su SIMULA.&#10;&#10;&#10;4. Inserire l'ID dell'ordine &#10;    desiderato per mostrare il &#10;    tracciamento (opzionale) " BorderPane.alignment="TOP_CENTER">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextArea>
-   </left>
+<BorderPane prefHeight="835.0" prefWidth="872.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.emanueledeleo.SimulatoreDiTrasportoMerce.FXMLController">
    <top>
       <Label alignment="TOP_CENTER" prefHeight="42.0" prefWidth="1088.0" text="Simulatore di trasporto merce " BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="10.0" />
          </BorderPane.margin>
          <font>
-            <Font name="System Bold" size="22.0" />
+            <Font name="System Bold Italic" size="22.0" />
          </font>
          <padding>
             <Insets bottom="10.0" />
          </padding>
       </Label>
    </top>
+   <bottom>
+      <VBox prefHeight="874.0" prefWidth="872.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="264.0" prefWidth="872.0">
+               <children>
+                  <TextArea editable="false" prefHeight="257.0" prefWidth="223.0" text=" Istruzioni&#10;&#10; 1. Selezionare i mezzi&#10;     desiderati e inserire i &#10;     parametri&#10;&#10; 2. Cliccare su CREA GRAFO&#10;&#10; 3. Inserire i parametri e &#10;     lanciare la simulazione &#10;     cliccando su SIMULA.&#10;&#10;4.  Inserire l'ID dell'ordine &#10;     desiderato e cliccare su&#10;     CERCA  per mostrare il &#10;     tracciamento (opzionale) &#10;" translateY="20.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="50.0" top="20.0" />
+                     </HBox.margin>
+                  </TextArea>
+                  <VBox prefHeight="100.0" prefWidth="87.0" translateX="30.0" translateY="30.0">
+                     <children>
+                        <RadioButton alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="29.0" prefWidth="87.0" selected="true" text=" Tir" translateX="10.0" translateY="50.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="btnAereo" mnemonicParsing="false" prefHeight="32.0" prefWidth="77.0" text=" Aereo" translateX="10.0" translateY="80.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="261.0" prefWidth="100.0" translateX="40.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="106.0" text="Volume (m³)" translateX="2.0" translateY="50.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="volumeTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="volumeAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                     </children>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="105.0" text="Peso (Kg)" translateY="50.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="pesoTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="pesoAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                     </children>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="100.0" text="Velocità (Km/h)" translateY="50.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="velocitaTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="15.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <Button fx:id="btnCreaGrafo" mnemonicParsing="false" prefHeight="25.0" prefWidth="127.0" text="Crea grafo" translateX="25.0" translateY="150.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Button>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="261.0" prefWidth="112.0" translateX="40.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="116.0" text="Costo (euro/Km)" translateX="5.0" translateY="50.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="costoTir" alignment="TOP_CENTER" translateY="65.0">
+                           <VBox.margin>
+                              <Insets left="20.0" right="17.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="costoAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
+                           <VBox.margin>
+                              <Insets left="20.0" right="17.0" />
+                           </VBox.margin>
+                        </TextField>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <TextArea fx:id="outputGrafo" editable="false" maxWidth="200.0" prefHeight="57.0" prefWidth="200.0" translateX="380.0" translateY="-60.0" />
+            <HBox prefHeight="54.0" prefWidth="842.0" translateY="-10.0">
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="19.0" prefWidth="118.0" text="Ordini giornalieri" translateX="25.0" translateY="-5.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></Label>
+                        <TextField fx:id="ordiniGiornalieri" alignment="TOP_CENTER" text="100" translateX="25.0" translateY="-2.0">
+                           <VBox.margin>
+                              <Insets left="20.0" right="20.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font size="13.0" />
+                           </font></TextField>
+                     </children></VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="20.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="19.0" prefWidth="114.0" text="Giorni" translateX="20.0" translateY="-5.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></Label>
+                        <TextField fx:id="nGiorni" alignment="TOP_CENTER" prefHeight="20.0" prefWidth="60.0" translateX="20.0" translateY="-2.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="20.0" right="20.0" />
+                           </VBox.margin>
+                        </TextField>
+                     </children></VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="109.0" text="Ora inizio" translateX="20.0" translateY="-5.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></Label>
+                        <Spinner fx:id="oraInizio" translateX="20.0">
+                           <VBox.margin>
+                              <Insets left="15.0" right="10.0" />
+                           </VBox.margin>
+                        </Spinner>
+                     </children></VBox>
+                  <VBox prefHeight="200.0" prefWidth="96.0" translateX="90.0">
+                     <children>
+                        <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="106.0" text="Ora fine" translateY="-5.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></Label>
+                        <Spinner fx:id="oraFine">
+                           <VBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </VBox.margin>
+                        </Spinner>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="54.0" prefWidth="154.0">
+                     <children>
+                        <Button fx:id="btnSimula" mnemonicParsing="false" prefHeight="30.0" prefWidth="181.0" text="Simula" translateX="200.0" translateY="18.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                     </children></VBox>
+               </children>
+            </HBox>
+            <HBox prefHeight="228.0" prefWidth="872.0">
+               <children>
+                  <TextArea fx:id="outputOrdini" editable="false" prefHeight="228.0" prefWidth="461.0" translateX="50.0">
+                     <HBox.margin>
+                        <Insets top="20.0" />
+                     </HBox.margin>
+                  </TextArea>
+                  <TextArea fx:id="outputGenerale" editable="false" prefHeight="168.0" prefWidth="236.0" translateX="110.0">
+                     <HBox.margin>
+                        <Insets bottom="30.0" top="30.0" />
+                     </HBox.margin>
+                  </TextArea>
+               </children>
+            </HBox>
+            <HBox prefHeight="267.0" prefWidth="872.0">
+               <children>
+                  <Label prefHeight="20.0" prefWidth="24.0" text="ID :" translateX="580.0" translateY="60.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="54.0" translateX="580.0" translateY="58.0" />
+                  <TextArea fx:id="outputOridneSpecifico" editable="false" prefHeight="267.0" prefWidth="461.0" translateX="-28.0">
+                     <HBox.margin>
+                        <Insets bottom="50.0" top="40.0" />
+                     </HBox.margin>
+                  </TextArea>
+                  <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" prefHeight="30.0" prefWidth="74.0" text="Cerca" translateX="45.0" translateY="100.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </children></VBox>
+   </bottom>
 </BorderPane>
