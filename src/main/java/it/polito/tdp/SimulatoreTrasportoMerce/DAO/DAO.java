@@ -192,5 +192,8 @@ public class DAO {
 		}
 
 	}
+	
+// METODO ADD TRATTA
 
+	
 }

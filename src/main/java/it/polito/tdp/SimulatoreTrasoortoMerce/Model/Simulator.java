@@ -334,12 +334,15 @@ public class Simulator {
 							for (Mezzo aereo : aereiPartiti) { // AGGIORNO MAPPA AEREI CON GLI AEREI CHE SONO
 																// PARTITI E CAMBIANO
 																// RESIDENZA
-								if (!mappaAerei.containsKey(aereo.getCitta())) {
-									mappaAerei.put(aereo.getCitta(), new ArrayList<Mezzo>());
+								if (!mappaAerei.containsKey(aereo.getDestinazione())) {
+									mappaAerei.put(aereo.getDestinazione(), new ArrayList<Mezzo>());
 								}
+								mappaAerei.get(aereo.getCitta()).remove(aereo);
+								aereo.setCitta(aereo.getDestinazione());
+								aereo.setDestinazione(null);
 								mappaAerei.get(aereo.getCitta()).add(aereo);
+
 							}
-							mappaAerei.get(metropoli).removeAll(aereiPartiti);
 							aereiPartiti.clear();
 						}
 
@@ -494,7 +497,7 @@ public class Simulator {
 				System.out.println("QUESTO ORDINE PRENDE L'AEREO : ID: " + ordineMezzo.getId() + "per "
 						+ ordineMezzo.getProssimaCitta());
 				ordiniConsegnati.add(ordineMezzo);
-
+				
 				if (!ordiniVoli.containsKey(mezzo.getCitta())) {
 					ordiniVoli.put(mezzo.getCitta(), new PriorityQueue<Ordine>());
 				}
@@ -512,8 +515,6 @@ public class Simulator {
 	public List<Ordine> consegnaAerei(Citta metropoliSorgente, Citta metropoliDestinazione, Mezzo aereo) {
 
 		List<Ordine> ordiniInViaggio = new ArrayList<Ordine>();
-		aereo.setCitta(metropoliDestinazione);
-		aereo.setDestinazione(null);
 		Arco voloAereo = null;
 
 		for (Arco passo : grafo.edgeSet()) {
@@ -534,12 +535,13 @@ public class Simulator {
 			if (ordineAereo.getDestinazione().equals(metropoliDestinazione)) {
 				System.out.println("ordine " + ordineAereo.getId() + " consegnato il " + ordineAereo.getDataOra()
 						+ " con aereo id: " + aereo.getId() + "a " + metropoliDestinazione);
+				aggiungiOrdineConsegnato(ordineAereo);
 				nOrdiniCompletati++;
 			} else {
 				ordiniInViaggio.add(ordineAereo);
 				System.out
 						.println("step metropoli ordine: " + ordineAereo.getId() + " città: " + metropoliDestinazione);
-
+				
 			}
 		}
 
