@@ -14,6 +14,7 @@ public class TestModel {
 		// m.aggiungiMezzo(mezzo1);
 		m.generaMezzo("Aereo", 2.3, 3.5, 5.5, 1.2);
 		System.out.println(m.creaGrafo());
+		System.out.println(m.dao.getOrdini());
 
 		// m.caricaOrdini();
 		// System.out.println(m.getMappaOrdini().values().toString());

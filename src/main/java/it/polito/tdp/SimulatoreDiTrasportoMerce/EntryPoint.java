@@ -1,7 +1,7 @@
 package it.polito.tdp.SimulatoreDiTrasportoMerce;
 
 import javafx.application.Application;
-import static javafx.application.Application.launch;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Model;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,13 +12,14 @@ public class EntryPoint extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
-        
+	    FXMLController controller;
+    	
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Scene.fxml"));
+        Parent root = loader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        scene.getRoot().setStyle("-fx-font-family: 'serif'");
-
-        stage.setTitle("JavaFX and Maven");
+        controller = loader.getController();
+        Model model = new Model();
+        controller.setModel(model);
         stage.setScene(scene);
         stage.show();
     }

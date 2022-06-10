@@ -71,7 +71,7 @@ public class Model {
 		}
 		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo); // L'ALGORITMO DI DIJKSTRA SI BASERA' SUI SINGOLI PESI
 
-		return String.format("Grafo creato con %d vertici e %d archi\n", this.grafo.vertexSet().size(),
+		return String.format("Grafo creato con:\n%d vertici e %d archi\n", this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size());
 
 	}
@@ -115,10 +115,8 @@ public class Model {
 		return this.listaMetropoli;
 	}
 
-	public void caricaOrdini() {
-		mappaOrdiniConPartenza = new LinkedHashMap<Citta, List<Ordine>>();
-		dao.getOrdini(mappaOrdiniConPartenza, mapCitta);
-
+	public String getOrdini() {
+		return dao.getOrdini();
 	}
 
 	public DijkstraShortestPath<Citta, Arco> getDijkstra() {
@@ -137,4 +135,7 @@ public class Model {
 		dao.clearTableOrdiniConsegnati();
 	}
 
+	public String tracciaOrdine(int id) {
+		return dao.tracciaOrdine(id);
+	}
 }

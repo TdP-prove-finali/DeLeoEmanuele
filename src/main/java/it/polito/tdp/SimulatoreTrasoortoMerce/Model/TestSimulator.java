@@ -35,6 +35,9 @@ public class TestSimulator {
 		System.out.println(sim.getnTir() + " " + sim.getNnAerei());
 
 		System.out.println("Ordini Completati: " + sim.getnOrdiniCompletati());
+		
+		
+		
 	}
 
 }

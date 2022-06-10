@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
@@ -12,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="835.0" prefWidth="872.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.emanueledeleo.SimulatoreDiTrasportoMerce.FXMLController">
+<BorderPane prefHeight="835.0" prefWidth="872.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.SimulatoreDiTrasportoMerce.FXMLController">
    <top>
       <Label alignment="TOP_CENTER" prefHeight="42.0" prefWidth="1088.0" text="Simulatore di trasporto merce " BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -41,12 +42,12 @@
                   </TextArea>
                   <VBox prefHeight="100.0" prefWidth="87.0" translateX="30.0" translateY="30.0">
                      <children>
-                        <RadioButton alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="29.0" prefWidth="87.0" selected="true" text=" Tir" translateX="10.0" translateY="50.0">
+                        <RadioButton fx:id="ticTir" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="29.0" prefWidth="87.0" selected="true" text=" Tir" translateX="10.0" translateY="50.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </RadioButton>
-                        <RadioButton fx:id="btnAereo" mnemonicParsing="false" prefHeight="32.0" prefWidth="77.0" text=" Aereo" translateX="10.0" translateY="80.0">
+                        <RadioButton fx:id="ticAereo" mnemonicParsing="false" prefHeight="32.0" prefWidth="77.0" text=" Aereo" translateX="10.0" translateY="80.0">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -114,7 +115,7 @@
                               <Insets left="15.0" right="15.0" />
                            </VBox.margin>
                         </TextField>
-                        <Button fx:id="btnCreaGrafo" mnemonicParsing="false" prefHeight="25.0" prefWidth="127.0" text="Crea grafo" translateX="25.0" translateY="150.0">
+                        <Button fx:id="btnCreaGrafo" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="25.0" prefWidth="127.0" text="Crea grafo" translateX="25.0" translateY="150.0">
                            <font>
                               <Font size="14.0" />
                            </font></Button>
@@ -141,7 +142,7 @@
                   </VBox>
                </children>
             </HBox>
-            <TextArea fx:id="outputGrafo" editable="false" maxWidth="200.0" prefHeight="57.0" prefWidth="200.0" translateX="380.0" translateY="-60.0" />
+            <TextArea fx:id="outputGrafo" editable="false" maxWidth="200.0" prefHeight="64.0" prefWidth="200.0" translateX="380.0" translateY="-60.0" />
             <HBox prefHeight="54.0" prefWidth="842.0" translateY="-10.0">
                <VBox.margin>
                   <Insets left="15.0" right="15.0" />
@@ -201,13 +202,19 @@
                         </Spinner>
                      </children>
                   </VBox>
-                  <VBox prefHeight="54.0" prefWidth="154.0">
+                  <VBox prefHeight="50.0" prefWidth="148.0" translateX="50.0">
                      <children>
-                        <Button fx:id="btnSimula" mnemonicParsing="false" prefHeight="30.0" prefWidth="181.0" text="Simula" translateX="200.0" translateY="18.0">
+                        <Button fx:id="btnSimula" mnemonicParsing="false" onAction="#simula" prefHeight="30.0" prefWidth="181.0" text="Simula" translateX="200.0" translateY="18.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
+                        <Label prefHeight="20.0" prefWidth="53.0" text="Timeout" translateX="80.0" translateY="-35.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="timeout" maxHeight="20.0" maxWidth="60.0" prefHeight="20.0" prefWidth="60.0" translateX="78.0" translateY="-30.0" />
                      </children></VBox>
                </children>
             </HBox>
@@ -225,6 +232,7 @@
                   </TextArea>
                </children>
             </HBox>
+            <ProgressBar fx:id="myProgressBar" prefHeight="20.0" prefWidth="758.0" progress="0.0" translateX="50.0" translateY="25.0" />
             <HBox prefHeight="267.0" prefWidth="872.0">
                <children>
                   <Label prefHeight="20.0" prefWidth="24.0" text="ID :" translateX="580.0" translateY="60.0">
@@ -233,12 +241,12 @@
                      </font>
                   </Label>
                   <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="54.0" translateX="580.0" translateY="58.0" />
-                  <TextArea fx:id="outputOridneSpecifico" editable="false" prefHeight="267.0" prefWidth="461.0" translateX="-28.0">
+                  <TextArea fx:id="outputOridneSpecifico" editable="false" prefHeight="267.0" prefWidth="461.0" translateX="-28.0" translateY="20.0">
                      <HBox.margin>
                         <Insets bottom="50.0" top="40.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" prefHeight="30.0" prefWidth="74.0" text="Cerca" translateX="45.0" translateY="100.0">
+                  <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" onAction="#cercaOrdine" prefHeight="30.0" prefWidth="74.0" text="Cerca" translateX="45.0" translateY="100.0">
                      <font>
                         <Font size="14.0" />
                      </font>

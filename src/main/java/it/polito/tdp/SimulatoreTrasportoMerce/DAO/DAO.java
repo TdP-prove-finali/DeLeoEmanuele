@@ -21,7 +21,7 @@ import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
 
 public class DAO {
 
-	public void getCitta(Map<String, Citta> mapCitta) {                                      // RESTITUISCE TUTTE LE CITTA' 
+	public void getCitta(Map<String, Citta> mapCitta) { // RESTITUISCE TUTTE LE CITTA'
 
 		final String sql = "SELECT Partenza, Destinazione " + "FROM tratte "
 				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus' OR Mezzo_di_trasporto = 'Treno' "
@@ -55,7 +55,7 @@ public class DAO {
 
 	}
 
-	public void addOrdine(Ordine o) {                                                             // AGGIUNGE ORDINE SIMULATO NEL DB
+	public void addOrdine(Ordine o) { // AGGIUNGE ORDINE SIMULATO NEL DB
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -73,8 +73,9 @@ public class DAO {
 
 	}
 
-	public void getOrdini(Map<Citta, List<Ordine>> mapOrdini, Map<String, Citta> mapCitta) {       // LEGGE GLI ORDINI SIMULATI DAL DB
+	public String getOrdini() { // LEGGE GLI ORDINI SIMULATI DAL DB
 
+		String output = "";
 		final String sql = "SELECT* FROM ordini ORDER BY Data;";
 
 		try {
@@ -83,17 +84,9 @@ public class DAO {
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-				Ordine o = new Ordine(rs.getInt("ID"), mapCitta.get(rs.getString("Sorgente")),
-						mapCitta.get(rs.getString("Destinazione")), rs.getDouble("Peso"), rs.getDouble("Volume"),
-						rs.getTimestamp("Data").toLocalDateTime());
-
-				if (!mapOrdini.containsKey(o.getSorgente())) {
-					List<Ordine> listaOrdini = new LinkedList<Ordine>();
-					listaOrdini.add(o);
-					mapOrdini.put(o.getSorgente(), listaOrdini);
-				} else {
-					mapOrdini.get(o.getSorgente()).add(o);
-				}
+				output += String.format("%-8s %8s %8s %8s %12s %17s", " ID=" + rs.getInt("ID"),
+						rs.getString("Sorgente"), rs.getString("Destinazione"), "  peso=" + rs.getDouble("Peso"),
+						" volume=" + rs.getDouble("Volume"), " " + rs.getTimestamp("Data").toLocalDateTime() + "\n");
 			}
 
 			st.close();
@@ -103,9 +96,12 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
+		return output;
 	}
 
-	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) {        // RESTITUISCE LE TRATTE DAL DB PER I MEZZI SPECIFICATI 
+	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) { // RESTITUISCE LE TRATTE DAL
+																							// DB PER I MEZZI
+																							// SPECIFICATI
 
 		List<Tratta> tratte = new ArrayList<Tratta>();
 		final String sql = "SELECT* FROM tratte;";
@@ -142,11 +138,11 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
-	
+
 		return tratte;
 	}
 
-	public void clearTableOrdini() {                                                // METODI PER PULIRE LE TABELLE
+	public void clearTableOrdini() { // METODI PER PULIRE LE TABELLE
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -175,14 +171,15 @@ public class DAO {
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
 	}
-	
-	public void addOrdineConsegnato(Ordine o) {                                   // AGGIUNGE ORDINE CONSEGNATO SUL DB
+
+	public void addOrdineConsegnato(Ordine o, Citta citta, Mezzo mezzo) { // AGGIUNGE ORDINE CONSEGNATO SUL DB
 
 		try {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
-			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data) " + "VALUES ('"
-					+ o.getId() + "','" + o.getDestinazione() + "','" + o.getDataOra() + "');");
+			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
+					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + o.getDataOra() + "','" + mezzo.getId()
+					+ "','" + mezzo.getTipo() + "');");
 			statement.close();
 			conn.close();
 
@@ -192,8 +189,32 @@ public class DAO {
 		}
 
 	}
-	
-// METODO ADD TRATTA
 
-	
+	public String tracciaOrdine(int id) {
+		String output = "";
+		final String sql = "SELECT* FROM ordini_consegnati WHERE ID =" + id + ";";
+		try {
+
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				output += String.format("%-10s %10s %10s %10s %10s",
+						"ID_ORDINE=" + rs.getInt("ID") ," " + rs.getString("citta_consegna") , " Data="
+								+ rs.getTimestamp("data").toLocalDateTime() , " ID_Mezzo=" + rs.getInt("ID_mezzo"),
+								 " tipo=" + rs.getString("tipo_mezzo")+"\n");
+			}
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+
+		return output;
+	}
+
 }
