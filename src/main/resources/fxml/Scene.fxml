@@ -13,246 +13,256 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="835.0" prefWidth="872.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.SimulatoreDiTrasportoMerce.FXMLController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="880.0" prefWidth="892.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.SimulatoreDiTrasportoMerce.FXMLController">
    <top>
-      <Label alignment="TOP_CENTER" prefHeight="42.0" prefWidth="1088.0" text="Simulatore di trasporto merce " BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets top="10.0" />
-         </BorderPane.margin>
+      <Label alignment="TOP_CENTER" prefHeight="29.0" prefWidth="789.0" text="Simulatore di trasporto merce" translateY="10.0" BorderPane.alignment="CENTER">
          <font>
-            <Font name="System Bold Italic" size="22.0" />
+            <Font name="System Bold Italic" size="20.0" />
          </font>
-         <padding>
-            <Insets bottom="10.0" />
-         </padding>
       </Label>
    </top>
-   <bottom>
-      <VBox prefHeight="874.0" prefWidth="872.0" BorderPane.alignment="CENTER">
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox prefHeight="264.0" prefWidth="872.0">
+            <HBox maxHeight="474.0" prefHeight="377.0" prefWidth="897.0" translateY="20.0">
                <children>
-                  <TextArea editable="false" prefHeight="257.0" prefWidth="223.0" text=" Istruzioni&#10;&#10; 1. Selezionare i mezzi&#10;     desiderati e inserire i &#10;     parametri&#10;&#10; 2. Cliccare su CREA GRAFO&#10;&#10; 3. Inserire i parametri e &#10;     lanciare la simulazione &#10;     cliccando su SIMULA.&#10;&#10;4.  Inserire l'ID dell'ordine &#10;     desiderato e cliccare su&#10;     CERCA  per mostrare il &#10;     tracciamento (opzionale) &#10;" translateY="20.0">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets left="50.0" top="20.0" />
-                     </HBox.margin>
-                  </TextArea>
-                  <VBox prefHeight="100.0" prefWidth="87.0" translateX="30.0" translateY="30.0">
+                  <VBox prefHeight="434.0" prefWidth="284.0" translateX="10.0">
                      <children>
-                        <RadioButton fx:id="ticTir" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="29.0" prefWidth="87.0" selected="true" text=" Tir" translateX="10.0" translateY="50.0">
+                        <TextArea disable="true" editable="false" maxHeight="394.0" maxWidth="289.0" opacity="0.93" prefHeight="337.0" prefWidth="275.0" text="Istruzioni:&#10;&#10;1) Scegliere i mezzi desiderati ed&#10; inserire i parametri per ognuno di&#10; essi. &#10;  &#10;2) Premere su CREA GRAFO per la&#10; creazione della rete di trasporto &#10;&#10;3) Inserire i parametri e lanciare la&#10; simulazione premendo su &#10; SIMULA&#10;&#10;4) Inserire l'ID dell'ordine da&#10; tracciare e premere su CERCA" translateX="10.0" translateY="10.0">
+                           <VBox.margin>
+                              <Insets left="12.0" />
+                           </VBox.margin>
                            <font>
-                              <Font size="14.0" />
+                              <Font size="15.0" />
                            </font>
-                        </RadioButton>
-                        <RadioButton fx:id="ticAereo" mnemonicParsing="false" prefHeight="32.0" prefWidth="77.0" text=" Aereo" translateX="10.0" translateY="80.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </RadioButton>
+                        </TextArea>
                      </children>
                   </VBox>
-                  <VBox prefHeight="261.0" prefWidth="100.0" translateX="40.0">
+                  <VBox prefHeight="337.0" prefWidth="509.0" translateX="60.0" translateY="20.0">
                      <children>
-                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="106.0" text="Volume (m³)" translateX="2.0" translateY="50.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <TextField fx:id="volumeTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <TextField fx:id="volumeAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                     </children>
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="105.0" text="Peso (Kg)" translateY="50.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <TextField fx:id="pesoTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <TextField fx:id="pesoAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                     </children>
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="100.0" text="Velocità (Km/h)" translateY="50.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <TextField fx:id="velocitaTir" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="65.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="15.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <Button fx:id="btnCreaGrafo" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="25.0" prefWidth="127.0" text="Crea grafo" translateX="25.0" translateY="150.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font></Button>
-                     </children>
-                  </VBox>
-                  <VBox prefHeight="261.0" prefWidth="112.0" translateX="40.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="116.0" text="Costo (euro/Km)" translateX="5.0" translateY="50.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <TextField fx:id="costoTir" alignment="TOP_CENTER" translateY="65.0">
-                           <VBox.margin>
-                              <Insets left="20.0" right="17.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <TextField fx:id="costoAereo" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="50.0" translateY="100.0">
-                           <VBox.margin>
-                              <Insets left="20.0" right="17.0" />
-                           </VBox.margin>
-                        </TextField>
+                        <HBox maxWidth="537.0" prefHeight="132.0" prefWidth="506.0" translateX="20.0" translateY="40.0">
+                           <children>
+                              <RadioButton fx:id="ticTir" disable="true" mnemonicParsing="false" selected="true" text="Tir" translateX="-15.0" translateY="20.0">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </RadioButton>
+                              <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="107.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="132.0" text="Volume max" translateY="-25.0">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="volumeTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="50">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="107.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="135.0" text="Peso max" translateY="-25.0">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="pesoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="1000">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="107.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="109.0" text="Velocità" translateY="-25.0">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="velocitaTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="80">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="107.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" prefHeight="20.0" prefWidth="109.0" text="Costo " translateY="-25.0">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="costoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="2.00">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox maxWidth="488.0" prefHeight="79.0" prefWidth="488.0" translateX="10.0">
+                           <children>
+                              <RadioButton fx:id="ticAereo" mnemonicParsing="false" prefHeight="21.0" prefWidth="75.0" text="Aereo" translateX="-5.0">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </RadioButton>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="87.0">
+                                 <children>
+                                    <TextField fx:id="volumeAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="100">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="131.0">
+                                 <children>
+                                    <TextField fx:id="pesoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="300" translateX="2.0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="123.0">
+                                 <children>
+                                    <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="200" translateX="-10.0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="102.0">
+                                 <children>
+                                    <TextField fx:id="costoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="7.50" translateX="-10.0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font></TextField>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="184.0" prefWidth="506.0" translateY="-10.0">
+                           <children>
+                              <TextArea fx:id="outputGrafo" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="195.0" translateX="60.0" translateY="20.0" />
+                              <Button fx:id="btnCreaGrafo" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="30.0" prefWidth="109.0" text="Crea grafo" translateX="120.0" translateY="45.0">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </children>
             </HBox>
-            <TextArea fx:id="outputGrafo" editable="false" maxWidth="200.0" prefHeight="64.0" prefWidth="200.0" translateX="380.0" translateY="-60.0" />
-            <HBox prefHeight="54.0" prefWidth="842.0" translateY="-10.0">
-               <VBox.margin>
-                  <Insets left="15.0" right="15.0" />
-               </VBox.margin>
+            <HBox prefHeight="285.0" prefWidth="789.0">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
+                  <VBox prefHeight="284.0" prefWidth="508.0">
                      <children>
-                        <Label alignment="TOP_CENTER" prefHeight="19.0" prefWidth="118.0" text="Ordini giornalieri" translateX="25.0" translateY="-5.0">
-                           <font>
-                              <Font size="13.0" />
-                           </font></Label>
-                        <TextField fx:id="ordiniGiornalieri" alignment="TOP_CENTER" text="100" translateX="25.0" translateY="-2.0">
-                           <VBox.margin>
-                              <Insets left="20.0" right="20.0" />
-                           </VBox.margin>
-                           <font>
-                              <Font size="13.0" />
-                           </font></TextField>
-                     </children></VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="20.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="19.0" prefWidth="114.0" text="Giorni" translateX="20.0" translateY="-5.0">
-                           <font>
-                              <Font size="13.0" />
-                           </font></Label>
-                        <TextField fx:id="nGiorni" alignment="TOP_CENTER" prefHeight="20.0" prefWidth="60.0" translateX="20.0" translateY="-2.0">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="20.0" right="20.0" />
-                           </VBox.margin>
-                        </TextField>
-                     </children></VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" translateX="40.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="109.0" text="Ora inizio" translateX="20.0" translateY="-5.0">
-                           <font>
-                              <Font size="13.0" />
-                           </font></Label>
-                        <Spinner fx:id="oraInizio" translateX="20.0">
-                           <VBox.margin>
-                              <Insets left="15.0" right="10.0" />
-                           </VBox.margin>
-                        </Spinner>
-                     </children></VBox>
-                  <VBox prefHeight="200.0" prefWidth="96.0" translateX="90.0">
-                     <children>
-                        <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="106.0" text="Ora fine" translateY="-5.0">
-                           <font>
-                              <Font size="13.0" />
-                           </font></Label>
-                        <Spinner fx:id="oraFine">
-                           <VBox.margin>
-                              <Insets left="10.0" right="10.0" />
-                           </VBox.margin>
-                        </Spinner>
+                        <HBox prefHeight="79.0" prefWidth="592.0" translateX="20.0" translateY="10.0">
+                           <children>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label alignment="TOP_CENTER" prefHeight="17.0" prefWidth="105.0" text="Giorni" translateY="-5.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Label>
+                                    <TextField fx:id="nGiorni" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="107.0">
+                                 <children>
+                                    <Label text="Ordini giornalieri" translateY="-5.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Label>
+                                    <TextField fx:id="ordiniGiornalieri" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label text="Ora inzio" translateY="-5.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Label>
+                                    <Spinner fx:id="oraInizio" prefHeight="25.0" prefWidth="60.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <Label prefHeight="20.0" prefWidth="51.0" text="Ora fine" translateY="-5.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Label>
+                                    <Spinner fx:id="oraFine" minWidth="30.0" prefHeight="25.0" prefWidth="59.0" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="95.0">
+                                 <children>
+                                    <Label text="Timeout" translateY="-5.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Label>
+                                    <TextField fx:id="timeout" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="222.0" prefWidth="494.0">
+                           <children>
+                              <TextArea fx:id="outputOrdini" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="495.0" translateX="30.0" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
-                  <VBox prefHeight="50.0" prefWidth="148.0" translateX="50.0">
+                  <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefHeight="285.0" prefWidth="398.0">
                      <children>
-                        <Button fx:id="btnSimula" mnemonicParsing="false" onAction="#simula" prefHeight="30.0" prefWidth="181.0" text="Simula" translateX="200.0" translateY="18.0">
+                        <HBox prefHeight="71.0" prefWidth="398.0" />
+                        <TextArea fx:id="outputGenerale" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="273.0" translateX="-15.0" translateY="-15.0">
+                           <VBox.margin>
+                              <Insets left="100.0" right="70.0" top="20.0" />
+                           </VBox.margin>
+                        </TextArea>
+                        <Button fx:id="btnSimula" mnemonicParsing="false" onAction="#simula" prefHeight="30.0" prefWidth="132.0" text="Simula">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <Label prefHeight="20.0" prefWidth="53.0" text="Timeout" translateX="80.0" translateY="-35.0">
+                        <ProgressBar fx:id="myProgressBar" prefHeight="15.0" prefWidth="271.0" progress="0.0" translateY="15.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox prefHeight="191.0" prefWidth="789.0">
+               <children>
+                  <TextArea fx:id="outputOridneSpecifico" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="130.0" prefWidth="496.0" translateX="30.0" translateY="20.0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextArea>
+                  <Label prefHeight="21.0" prefWidth="22.0" text="ID:" translateX="100.0" translateY="50.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <VBox alignment="TOP_CENTER" prefHeight="220.0" prefWidth="137.0" translateX="112.0">
+                     <children>
+                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="63.0" translateX="-50.0" translateY="50.0" />
+                           </children>
+                        </HBox>
+                        <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" onAction="#cercaOrdine" prefHeight="30.0" prefWidth="70.0" text="Cerca" translateX="-55.0">
                            <font>
                               <Font size="14.0" />
                            </font>
-                        </Label>
-                        <TextField fx:id="timeout" maxHeight="20.0" maxWidth="60.0" prefHeight="20.0" prefWidth="60.0" translateX="78.0" translateY="-30.0" />
-                     </children></VBox>
+                        </Button>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
-            <HBox prefHeight="228.0" prefWidth="872.0">
-               <children>
-                  <TextArea fx:id="outputOrdini" editable="false" prefHeight="228.0" prefWidth="461.0" translateX="50.0">
-                     <HBox.margin>
-                        <Insets top="20.0" />
-                     </HBox.margin>
-                  </TextArea>
-                  <TextArea fx:id="outputGenerale" editable="false" prefHeight="168.0" prefWidth="236.0" translateX="110.0">
-                     <HBox.margin>
-                        <Insets bottom="30.0" top="30.0" />
-                     </HBox.margin>
-                  </TextArea>
-               </children>
-            </HBox>
-            <ProgressBar fx:id="myProgressBar" prefHeight="20.0" prefWidth="758.0" progress="0.0" translateX="50.0" translateY="25.0" />
-            <HBox prefHeight="267.0" prefWidth="872.0">
-               <children>
-                  <Label prefHeight="20.0" prefWidth="24.0" text="ID :" translateX="580.0" translateY="60.0">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="54.0" translateX="580.0" translateY="58.0" />
-                  <TextArea fx:id="outputOridneSpecifico" editable="false" prefHeight="267.0" prefWidth="461.0" translateX="-28.0" translateY="20.0">
-                     <HBox.margin>
-                        <Insets bottom="50.0" top="40.0" />
-                     </HBox.margin>
-                  </TextArea>
-                  <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" onAction="#cercaOrdine" prefHeight="30.0" prefWidth="74.0" text="Cerca" translateX="45.0" translateY="100.0">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Button>
-               </children>
-            </HBox>
-         </children></VBox>
-   </bottom>
+         </children>
+      </VBox>
+   </center>
 </BorderPane>

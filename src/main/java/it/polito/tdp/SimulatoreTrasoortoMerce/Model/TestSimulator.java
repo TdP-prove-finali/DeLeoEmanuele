@@ -31,7 +31,6 @@ public class TestSimulator {
 		System.out.println(m.creaGrafo());
 
 		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(), m.getMetropoli());
-		sim.run();
 		System.out.println(sim.getnTir() + " " + sim.getNnAerei());
 
 		System.out.println("Ordini Completati: " + sim.getnOrdiniCompletati());

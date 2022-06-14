@@ -11,7 +11,7 @@ public class Mezzo {
 
 	int id;
 	String tipo;
-	Citta citta; 
+	Citta citta;
 	double pesoMax;
 	double spazioMax;
 	double velocitaMedia;
@@ -145,7 +145,7 @@ public class Mezzo {
 	/**
 	 * @param pesoOccupato the pesoOccupato to set
 	 */
-	public boolean assegnaOrdine(Ordine o) {                            //METODO PER CARICARE I MEZZI E SAPERE SE UN MEZZO E' PIENO 
+	public boolean assegnaOrdine(Ordine o) { // METODO PER CARICARE I MEZZI E SAPERE SE UN MEZZO E' PIENO
 		this.spazioOccupato = this.spazioOccupato + o.getVolume();
 		this.pesoOccupato = this.pesoOccupato + o.getPeso();
 		if (spazioOccupato > this.spazioMax || pesoOccupato > this.pesoMax) {
@@ -228,7 +228,7 @@ public class Mezzo {
 
 	public LocalDateTime getDataPartenza() {
 		if (!this.ordiniMezzo.isEmpty()) {
-		return this.ordiniMezzo.get(ordiniMezzo.size() - 1).getDataOra();
+			return this.ordiniMezzo.get(ordiniMezzo.size() - 1).getDataOra();
 		}
 		return this.dataMezzo;
 	}
@@ -258,7 +258,7 @@ public class Mezzo {
 
 	public void consegnaOrdini(List<Ordine> ordiniConsegnati) {
 		ordiniMezzo.removeAll(ordiniConsegnati);
-		
+
 	}
 
 }

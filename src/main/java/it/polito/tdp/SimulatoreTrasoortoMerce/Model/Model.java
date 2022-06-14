@@ -1,15 +1,9 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
-import java.time.LocalDateTime;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
@@ -78,7 +72,7 @@ public class Model {
 
 	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante) {
 
-		double pesoComplessivo = distanza * velocita * costoCarburante; // PESO UNICO PER OGNI PARAMETRO
+		double pesoComplessivo = (distanza / velocita) * costoCarburante; // PESO UNICO PER OGNI PARAMETRO
 
 		return Math.round(pesoComplessivo * 100.0) / 100.0;
 	}
@@ -138,4 +132,5 @@ public class Model {
 	public String tracciaOrdine(int id) {
 		return dao.tracciaOrdine(id);
 	}
+	
 }
