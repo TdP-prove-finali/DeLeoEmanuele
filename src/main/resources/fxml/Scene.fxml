@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -144,7 +145,7 @@
                         </HBox>
                         <HBox prefHeight="184.0" prefWidth="506.0" translateY="-10.0">
                            <children>
-                              <TextArea fx:id="outputGrafo" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="195.0" translateX="60.0" translateY="20.0" />
+                              <TextArea fx:id="outputGrafo" editable="false" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="195.0" translateX="60.0" translateY="20.0" />
                               <Button fx:id="btnCreaGrafo" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="30.0" prefWidth="109.0" text="Crea grafo" translateX="120.0" translateY="45.0">
                                  <font>
                                     <Font size="14.0" />
@@ -186,7 +187,7 @@
                                        <font>
                                           <Font size="14.0" />
                                        </font></Label>
-                                    <Spinner fx:id="oraInizio" prefHeight="25.0" prefWidth="60.0" />
+                                    <Spinner fx:id="oraInizio" prefHeight="25.0" prefWidth="63.0" />
                                  </children>
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -195,7 +196,7 @@
                                        <font>
                                           <Font size="14.0" />
                                        </font></Label>
-                                    <Spinner fx:id="oraFine" minWidth="30.0" prefHeight="25.0" prefWidth="59.0" />
+                                    <Spinner fx:id="oraFine" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" />
                                  </children>
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="95.0">
@@ -204,22 +205,35 @@
                                        <font>
                                           <Font size="14.0" />
                                        </font></Label>
-                                    <TextField fx:id="timeout" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" />
+                                    <TextField fx:id="timeout" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="63.0" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="51.0" />
                                  </children>
                               </VBox>
                            </children>
                         </HBox>
                         <HBox prefHeight="222.0" prefWidth="494.0">
                            <children>
-                              <TextArea fx:id="outputOrdini" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="495.0" translateX="30.0" />
+                              <TextArea fx:id="outputOrdini" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="495.0" translateX="30.0" />
                            </children>
                         </HBox>
                      </children>
                   </VBox>
                   <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefHeight="285.0" prefWidth="398.0">
                      <children>
-                        <HBox prefHeight="71.0" prefWidth="398.0" />
-                        <TextArea fx:id="outputGenerale" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="273.0" translateX="-15.0" translateY="-15.0">
+                        <HBox prefHeight="71.0" prefWidth="373.0">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="98.0" text="\% Riempimento" translateX="45.0" translateY="6.0" />
+                              <Slider fx:id="riempimento" prefHeight="46.0" prefWidth="78.0" showTickLabels="true" showTickMarks="true" translateX="-35.0" translateY="25.0" value="100.0" />
+                              <Label prefHeight="17.0" prefWidth="49.0" text="Tempo" translateX="10.0" translateY="10.0">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font></Label>
+                              <Slider fx:id="percentuale" prefHeight="38.0" prefWidth="184.0" showTickLabels="true" showTickMarks="true" translateX="-20.0" translateY="28.0" value="50.0" />
+                              <Label prefHeight="17.0" prefWidth="44.0" text="Costo" translateX="-45.0" translateY="10.0">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font></Label>
+                           </children></HBox>
+                        <TextArea fx:id="outputGenerale" editable="false" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="273.0" translateX="-15.0" translateY="-15.0">
                            <VBox.margin>
                               <Insets left="100.0" right="70.0" top="20.0" />
                            </VBox.margin>
@@ -236,7 +250,7 @@
             </HBox>
             <HBox prefHeight="191.0" prefWidth="789.0">
                <children>
-                  <TextArea fx:id="outputOridneSpecifico" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="130.0" prefWidth="496.0" translateX="30.0" translateY="20.0">
+                  <TextArea fx:id="outputOridneSpecifico" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="130.0" prefWidth="496.0" translateX="30.0" translateY="20.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

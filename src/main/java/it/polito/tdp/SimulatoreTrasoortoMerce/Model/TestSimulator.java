@@ -28,9 +28,11 @@ public class TestSimulator {
 		// esecuzione
 
 		// output
-		System.out.println(m.creaGrafo());
+		System.out.println(m.creaGrafo(50));
 
-		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(), m.getMetropoli());
+		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(), m.getMetropoli(), 50);
+		
+		sim.run();
 		System.out.println(sim.getnTir() + " " + sim.getNnAerei());
 
 		System.out.println("Ordini Completati: " + sim.getnOrdiniCompletati());

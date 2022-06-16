@@ -13,7 +13,6 @@ public class TestModel {
 		// Mezzo(1,"Autobus",2.3,3.5,4.5,1.6,m.getMappaCitta().get("Gorizia"));
 		// m.aggiungiMezzo(mezzo1);
 		m.generaMezzo("Aereo", 2.3, 3.5, 5.5, 1.2);
-		System.out.println(m.creaGrafo());
 		System.out.println(m.dao.getOrdini());
 
 		// m.caricaOrdini();

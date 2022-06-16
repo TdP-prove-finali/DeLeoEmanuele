@@ -1,6 +1,5 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +35,13 @@ public class Model {
 		listaMetropoli.add(mapCitta.get("Bologna"));
 		listaMetropoli.add(mapCitta.get("Napoli"));
 		listaMetropoli.add(mapCitta.get("Palermo"));
+		// Reggio calabria
+		// bari
+		// Cagliari
 
 	}
 
-	public String creaGrafo() {
+	public String creaGrafo(double percentuale) {
 		Arco arco = null;
 		this.grafo = new DirectedWeightedMultigraph<Citta, Arco>(Arco.class);
 		Graphs.addAllVertices(this.grafo, mapCitta.values());
@@ -58,7 +60,7 @@ public class Model {
 				grafo.setEdgeWeight(arco,
 						this.getPesoComplessivo(t.getDistanza(),
 								mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
-								mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante()));
+								mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), percentuale));
 
 			}
 
@@ -70,9 +72,14 @@ public class Model {
 
 	}
 
-	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante) {
+	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante, double percentuale) {
 
-		double pesoComplessivo = (distanza / velocita) * costoCarburante; // PESO UNICO PER OGNI PARAMETRO
+		double pesoComplessivo = ((distanza / velocita) * (percentuale / 100))
+				* (costoCarburante * ((100 - percentuale) / 100)); // PESO
+		// UNICO
+		// PER
+		// OGNI
+		// PARAMETRO
 
 		return Math.round(pesoComplessivo * 100.0) / 100.0;
 	}
@@ -130,7 +137,30 @@ public class Model {
 	}
 
 	public String tracciaOrdine(int id) {
-		return dao.tracciaOrdine(id);
+		double costo = 0.0;
+		List<OrdineConsegnato> tappe = dao.tracciaOrdine(id, mapCitta);
+
+		if (tappe.size() == 1) {
+			return tappe.toString();
+
+		}
+		for (int count = 1; count < tappe.size(); count++) {
+			if (tappe.get(count - 1).getTipo().equals(tappe.get(count).getTipo())
+					&& tappe.get(count - 1).getId_mezzo() == tappe.get(count).getId_mezzo()) {
+
+				for (Arco passo : grafo.edgeSet()) {
+					if (passo.getTipo().equals(tappe.get(count).getTipo())
+							&& passo.getSorgente().equals(tappe.get(count - 1).getCittaConsegna())
+							&& passo.getDestinazione().equals(tappe.get(count).getCittaConsegna())) {
+						costo += mapMezziConSpecifiche.get(passo.getTipo()).getCostoCarburante() * passo.getDistanza();
+						break;
+					}
+				}
+			}
+
+		}
+
+		return tappe.toString() + "\n\n COSTO=" + costo + " $";
 	}
-	
+
 }

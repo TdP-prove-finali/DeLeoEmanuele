@@ -16,6 +16,7 @@ import java.util.Map;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.OrdineConsegnato;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
 
 public class DAO {
@@ -125,6 +126,10 @@ public class DAO {
 								Double.parseDouble(rs.getString("Distanza_km").replace(",", ".")),
 								rs.getString("Mezzo_di_trasporto"), rs.getInt("Emissioni_g"));
 						if (!tratte.contains(newTratta) && !tratte.contains(trattaInversa)) {
+
+							if (newTratta.getMezzoTrasporto() == "Autobus") {
+								newTratta.setMezzoTrasporto("Tir");
+							}
 							tratte.add(newTratta);
 						}
 					}
@@ -189,8 +194,8 @@ public class DAO {
 
 	}
 
-	public String tracciaOrdine(int id) {
-		String output = "";
+	public List<OrdineConsegnato> tracciaOrdine(int id, Map<String, Citta> mapCitta) {
+		List<OrdineConsegnato> ordini = new LinkedList<OrdineConsegnato>();
 		final String sql = "SELECT* FROM ordini_consegnati WHERE ID =" + id + ";";
 		try {
 
@@ -200,10 +205,8 @@ public class DAO {
 
 			while (rs.next()) {
 
-				output += String.format("%-10s %10s %10s %10s %10s",
-						"ID_ORDINE=" + rs.getInt("ID") ," " + rs.getString("citta_consegna") , " Data="
-								+ rs.getTimestamp("data").toLocalDateTime() , " ID_Mezzo=" + rs.getInt("ID_mezzo"),
-								 " tipo=" + rs.getString("tipo_mezzo")+"\n");
+				ordini.add(new OrdineConsegnato(rs.getInt("ID"), mapCitta.get(rs.getString("citta_consegna")),
+						rs.getTimestamp("data").toLocalDateTime(), rs.getInt("ID_mezzo"), rs.getString("tipo_mezzo")));
 			}
 			st.close();
 			conn.close();
@@ -213,7 +216,7 @@ public class DAO {
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
 
-		return output;
+		return ordini;
 	}
 
 }

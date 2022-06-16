@@ -1,19 +1,17 @@
 package it.polito.tdp.SimulatoreDiTrasportoMerce;
 
 import java.net.URL;
+
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
-
-import javax.swing.SpinnerDateModel;
-
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Model;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Simulator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
@@ -82,12 +80,16 @@ public class FXMLController {
 	private TextField timeout;
 
 	@FXML
+	private Slider percentuale;
+
+	@FXML
+	private Slider riempimento;
+
+	@FXML
 	private TextArea outputOrdini;
 
 	@FXML
 	private TextArea outputGenerale;
-
-	SpinnerDateModel spin = new SpinnerDateModel();
 
 	@FXML
 	private Button btnSimula;
@@ -125,13 +127,14 @@ public class FXMLController {
 					Double.parseDouble(costoAereo.getText()));
 		}
 
-		outputGrafo.appendText(model.creaGrafo());
+		outputGrafo.appendText(model.creaGrafo(percentuale.getValue()));
 		btnSimula.setDisable(false);
 	}
 
 	@FXML
 	void simula(ActionEvent event) {
 
+		outputOridneSpecifico.clear();
 		outputOrdini.clear();
 		outputGenerale.clear();
 		model.clearTableOrdini();
@@ -143,13 +146,24 @@ public class FXMLController {
 		simulatore.setDataInizio(LocalDateTime.now().toLocalDate());
 		simulatore.setOraInizio(oraInizio.getValue(), 0);
 		simulatore.setOraFine(oraFine.getValue(), 0);
+		
+		
 		simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta().values(),
-				model.getMetropoli());
+				model.getMetropoli(), riempimento.getValue());
+		
 		outputOrdini.appendText(model.getOrdini());
+
+		long runStart = System.currentTimeMillis();
 		simulatore.run();
+		long runEnd = System.currentTimeMillis();
+		
+		long runTimeElapsed = runEnd - runStart;
+		System.out.println("**** RUN ELAPSED: " + runTimeElapsed / 1000 + " seconds");
+		
 		outputGenerale.appendText("Ordini consegnati = " + simulatore.getnOrdiniCompletati() + "\n\n" + "Tir = "
 				+ simulatore.getnTir() + "\n" + "Aerei = " + simulatore.getNnAerei() + "\n Costo totale="
 				+ simulatore.getCostoTotale());
+
 		btnTracciaOrdine.setDisable(false);
 		myProgressBar.setProgress(0);
 	}
@@ -175,6 +189,7 @@ public class FXMLController {
 		assert nGiorni != null : "fx:id=\"nGiorni\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert ordiniGiornalieri != null
 				: "fx:id=\"ordiniGiornalieri\" was not injected: check your FXML file 'Scene.fxml'.";
+		assert riempimento != null : "fx:id=\"riempimento\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert oraInizio != null : "fx:id=\"oraInizio\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert oraFine != null : "fx:id=\"oraFine\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert timeout != null : "fx:id=\"timeout\" was not injected: check your FXML file 'Scene.fxml'.";
@@ -187,6 +202,7 @@ public class FXMLController {
 		assert idOrdine != null : "fx:id=\"idOrdine\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert btnTracciaOrdine != null
 				: "fx:id=\"btnTracciaOrdine\" was not injected: check your FXML file 'Scene.fxml'.";
+		assert percentuale != null : "fx:id=\"percentuale\" was not injected: check your FXML file 'Scene.fxml'.";
 		int initialValueInizio = 8;
 		int initialValueFine = 16;
 		SpinnerValueFactory<Integer> valueFactoryInizio = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 12,
