@@ -10,17 +10,16 @@ public class TestSimulator {
 	public static void main(String[] args) {
 
 		Model m = new Model();
-		Simulator sim = new Simulator();
+		SimulatoreProvvisorio sim = new SimulatoreProvvisorio();
 		m.clearTableOrdini();
 		m.clearTableOrdiniConsegnati();
-		
 
 		// impostazione parametri
 
 		m.generaMezzo("Aereo", 500, 500, 400, 8);
 		m.generaMezzo("Autobus", 300, 300, 100, 8);
-		sim.setnOrdiniGiornalieri(1000);
-		sim.setnGiorni(5);
+		sim.setnOrdiniGiornalieri(500);
+		sim.setnGiorni(20);
 		sim.setDataInizio(LocalDate.of(2022, 5, 13));
 		sim.setOraInizio(8, 00);
 		sim.setOraFine(16, 00);
@@ -31,14 +30,12 @@ public class TestSimulator {
 		System.out.println(m.creaGrafo(50));
 
 		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta().values(), m.getMetropoli(), 50);
-		
+
 		sim.run();
-		System.out.println(sim.getnTir() + " " + sim.getNnAerei());
 
 		System.out.println("Ordini Completati: " + sim.getnOrdiniCompletati());
-		
-		
-		
+
+		System.out.println("tir: " + sim.getNtir() + "  aerei: " + sim.getNaerei());
 	}
 
 }

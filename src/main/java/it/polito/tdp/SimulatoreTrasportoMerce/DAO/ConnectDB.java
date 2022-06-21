@@ -18,6 +18,8 @@ public class ConnectDB {
 		if (ds == null) {
 			ds = new HikariDataSource();
 			ds.setJdbcUrl(jdbcURL);
+			ds.setPoolName("Pool-DB");
+			ds.setMaximumPoolSize(100);
 		}
 
 		try {

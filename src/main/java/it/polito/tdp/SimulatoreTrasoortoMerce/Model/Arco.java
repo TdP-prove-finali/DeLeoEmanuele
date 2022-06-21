@@ -5,22 +5,22 @@ import java.util.Objects;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class Arco extends DefaultWeightedEdge {
-	
+
 	private static final long serialVersionUID = 1L;
 	double distanza;
 	String tipo;
-	
-	
+	int id;
+
 	public Arco() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	public Arco(double distanza, String tipo) {
+
+	public Arco(double distanza, String tipo, int id) {
 		super();
-		this.distanza= distanza;
-		this.tipo=tipo;
+		this.distanza = distanza;
+		this.tipo = tipo;
+		this.id = id;
 	}
-	
 
 	public double getDistanza() {
 		return distanza;
@@ -49,16 +49,29 @@ public class Arco extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-		return "Arco [ distanza: "+ distanza + ", tipo="
-				+ tipo + "]";
+		return "Arco [ distanza: " + distanza + ", tipo=" + tipo + "]";
 	}
 
 	public Object getSorgente() {
 		return this.getSource();
 	}
-	
+
 	public Object getDestinazione() {
 		return this.getTarget();
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override
@@ -78,6 +91,5 @@ public class Arco extends DefaultWeightedEdge {
 		return Double.doubleToLongBits(distanza) == Double.doubleToLongBits(other.distanza)
 				&& Objects.equals(tipo, other.tipo);
 	}
-	
-	
+
 }

@@ -99,6 +99,33 @@ public class DAO {
 		return output;
 	}
 
+	public Ordine getOrdineById(int id, Map<String, Citta> cittaMap) { // LEGGE GLI ORDINI SIMULATI DAL DB
+
+		final String sql = "SELECT * FROM ordini WHERE id = " + id;
+		Ordine ordine = null;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			if (rs.next()) {
+				Citta sorgente = cittaMap.get(rs.getString("Sorgente"));
+				Citta destinazione = cittaMap.get(rs.getString("Destinazione"));
+				ordine = new Ordine(rs.getInt("ID"), sorgente, destinazione, rs.getDouble("Peso"),
+						rs.getDouble("Volume"), rs.getTimestamp("Data").toLocalDateTime());
+			}
+
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+		return ordine;
+	}
+
 	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) { // RESTITUISCE LE TRATTE DAL
 																							// DB PER I MEZZI
 																							// SPECIFICATI
@@ -127,9 +154,6 @@ public class DAO {
 								rs.getString("Mezzo_di_trasporto"), rs.getInt("Emissioni_g"));
 						if (!tratte.contains(newTratta) && !tratte.contains(trattaInversa)) {
 
-							if (newTratta.getMezzoTrasporto() == "Autobus") {
-								newTratta.setMezzoTrasporto("Tir");
-							}
 							tratte.add(newTratta);
 						}
 					}

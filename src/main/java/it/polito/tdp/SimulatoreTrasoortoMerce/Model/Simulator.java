@@ -18,8 +18,8 @@ import java.util.TreeMap;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
-import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Event.EventType;
-import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
+import it.emanueledeleo.ProjectTesi.DAO.DAO;
+import it.emanueledeleo.ProjectTesi.Model.Event.EventType;
 import javafx.scene.control.ProgressBar;
 
 public class Simulator {
@@ -187,6 +187,8 @@ public class Simulator {
 			
 		}
 	}
+	
+	
 
 	private void processEvent(Event e) {
 
@@ -206,7 +208,7 @@ public class Simulator {
 			 
 			
 			
-			this.queue.add(new Event(nuovoOrdine, EventType.TIMEOUT, nuovoOrdine.getDataOra().plusHours(timeout))); // FINCHE'
+    	this.queue.add(new Event(nuovoOrdine, EventType.TIMEOUT, nuovoOrdine.getDataOra().plusHours(timeout))); // FINCHE'
 																													// ARRIVA
 																													// UN
 																													// ORDINE

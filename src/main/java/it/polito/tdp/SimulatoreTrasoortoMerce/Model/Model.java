@@ -42,6 +42,7 @@ public class Model {
 	}
 
 	public String creaGrafo(double percentuale) {
+		int codiciMezzi = 1;
 		Arco arco = null;
 		this.grafo = new DirectedWeightedMultigraph<Citta, Arco>(Arco.class);
 		Graphs.addAllVertices(this.grafo, mapCitta.values());
@@ -56,12 +57,15 @@ public class Model {
 																			// COMPLESSIVO
 				arco.setDistanza(t.getDistanza()); // CHE TIENE TRACCIA DELLA VELOCITA' E DEL COSTO DEL CARBURANTE DEL
 													// VEICOLO IN QUESTIONE
+				arco.setId(codiciMezzi);
 				arco.setTipo(t.getMezzoTrasporto());
+				
 				grafo.setEdgeWeight(arco,
 						this.getPesoComplessivo(t.getDistanza(),
 								mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
 								mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), percentuale));
 
+				codiciMezzi++;
 			}
 
 		}

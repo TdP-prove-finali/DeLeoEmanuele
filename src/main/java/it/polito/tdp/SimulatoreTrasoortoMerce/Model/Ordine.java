@@ -1,6 +1,9 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class Ordine implements Comparable<Ordine> {
@@ -12,7 +15,10 @@ public class Ordine implements Comparable<Ordine> {
 	double volume;
 	LocalDateTime dataOra;
 	boolean timeout;
-	Citta prossimaCitta;           // CITTA A CUI FA RIFERIMENTO PER PRENDERE UN AEREO ( ESEMPIO: un ordine da Alessandria a napoli che deve passare per Torino
+	LinkedList<Arco> percorso;
+	Mezzo mezzo;
+
+	// TODO Aggiungere uno stato IN_ELABORAZIONE, IN_ATTESA
 
 	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, LocalDateTime dataOra) {
 
@@ -23,7 +29,8 @@ public class Ordine implements Comparable<Ordine> {
 		this.volume = volume;
 		this.dataOra = dataOra;
 		this.timeout = false;
-		prossimaCitta = null;
+		this.mezzo = null;
+		this.percorso = new LinkedList<Arco>();
 
 	}
 
@@ -108,6 +115,32 @@ public class Ordine implements Comparable<Ordine> {
 		this.dataOra = dataOra;
 	}
 
+	/**
+	 * @return the percorso
+	 */
+	public List<Arco> getPercorso() {
+		return percorso;
+	}
+
+	/**
+	 * @param percorso the percorso to set
+	 */
+	public void setPercorso(List<Arco> percorso) {
+		this.percorso = new LinkedList<Arco>(percorso);
+	}
+
+	public Arco getProssimaTratta() {
+
+		return ((LinkedList<Arco>) percorso).peek();
+
+	}
+
+	public void rimuoviTratta() {
+
+		((LinkedList<Arco>) percorso).poll();
+
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
@@ -153,17 +186,26 @@ public class Ordine implements Comparable<Ordine> {
 	}
 
 	/**
-	 * @return the prossimaCitta
+	 * @return the mezzo
 	 */
-	public Citta getProssimaCitta() {
-		return prossimaCitta;
+	public Mezzo getMezzo() {
+		return mezzo;
 	}
 
 	/**
-	 * @param prossimaCitta the prossimaCitta to set
+	 * @param mezzo the mezzo to set
 	 */
-	public void setProssimaCitta(Citta prossimaCitta) {
-		this.prossimaCitta = prossimaCitta;
+	public void setMezzo(Mezzo mezzo) {
+		this.mezzo = mezzo;
+	}
+
+	public boolean isProcessable() {
+
+		if (mezzo.getStato().equals(Stato.DISPONIBILE)) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

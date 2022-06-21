@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Model;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Simulator;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.SimulatoreProvvisorio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,7 +21,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 
 	private Model model;
-	private Simulator simulatore;
+	private SimulatoreProvvisorio simulatore;
 
 	@FXML
 	private ResourceBundle resources;
@@ -139,7 +140,7 @@ public class FXMLController {
 		outputGenerale.clear();
 		model.clearTableOrdini();
 		model.clearTableOrdiniConsegnati();
-		this.simulatore = new Simulator();
+		this.simulatore = new SimulatoreProvvisorio();
 		simulatore.setnGiorni(Integer.parseInt(nGiorni.getText()));
 		simulatore.setTimeout(Integer.parseInt(timeout.getText()));
 		simulatore.setnOrdiniGiornalieri(Integer.parseInt(ordiniGiornalieri.getText()));
@@ -148,7 +149,7 @@ public class FXMLController {
 		simulatore.setOraFine(oraFine.getValue(), 0);
 		
 		
-		simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta().values(),
+		simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta(),
 				model.getMetropoli(), riempimento.getValue());
 		
 		outputOrdini.appendText(model.getOrdini());

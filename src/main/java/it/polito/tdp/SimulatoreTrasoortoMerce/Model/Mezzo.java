@@ -1,6 +1,15 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.PriorityQueue;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +18,10 @@ import java.util.PriorityQueue;
 
 public class Mezzo {
 
+	public enum Stato {
+		DISPONIBILE, OCCUPATO
+	};
+
 	int id;
 	String tipo;
 	Citta citta;
@@ -16,14 +29,13 @@ public class Mezzo {
 	double spazioMax;
 	double velocitaMedia;
 	double costoCarburante;
-	double pesoOccupato;
-	double spazioOccupato;
-	List<Ordine> ordiniMezzo;
+	PriorityQueue<Ordine> ordiniMezzo;
 	LocalDateTime dataMezzo;
-	Citta destinazione; // SOLO PER AEREI, ho evitato di fare sottoclassi
+	Citta destinazione;
+	private Stato stato;
 
 	public Mezzo(int id, String tipo, double pesoMax, double spazioMax, double velocitaMedia, double costoCarburante,
-			Citta citta) {
+			Citta citta, Stato stato) {
 		this.id = id;
 		this.tipo = tipo;
 		this.pesoMax = pesoMax;
@@ -31,9 +43,8 @@ public class Mezzo {
 		this.velocitaMedia = velocitaMedia;
 		this.costoCarburante = costoCarburante;
 		this.citta = citta;
-		this.pesoOccupato = 0.0;
-		this.spazioOccupato = 0.0;
-		ordiniMezzo = new LinkedList<Ordine>();
+		this.stato = stato;
+		ordiniMezzo = new PriorityQueue<Ordine>();
 		destinazione = null;
 	}
 
@@ -136,46 +147,16 @@ public class Mezzo {
 	}
 
 	/**
-	 * @return the pesoOccupato
-	 */
-	public double getPesoOccupato() {
-		return pesoOccupato;
-	}
-
-	/**
 	 * @param pesoOccupato the pesoOccupato to set
 	 */
-	public boolean assegnaOrdine(Ordine o) { // METODO PER CARICARE I MEZZI E SAPERE SE UN MEZZO E' PIENO
-		this.spazioOccupato = this.spazioOccupato + o.getVolume();
-		this.pesoOccupato = this.pesoOccupato + o.getPeso();
-		if (spazioOccupato > this.spazioMax || pesoOccupato > this.pesoMax) {
-			this.spazioOccupato = this.spazioOccupato - o.getVolume();
-			this.pesoOccupato = this.pesoOccupato - o.getPeso();
-			return false;
-		}
-
+	public void assegnaOrdine(Ordine o) {
 		ordiniMezzo.add(o);
-
-		return true;
-	}
-
-	public void scaricaMerce() {
-		ordiniMezzo.clear();
-		this.spazioOccupato = 0.0;
-		this.pesoOccupato = 0.0;
-	}
-
-	/**
-	 * @return the spazioOccupato
-	 */
-	public double getSpazioOccupato() {
-		return spazioOccupato;
 	}
 
 	/**
 	 * @return the ordiniMezzo
 	 */
-	public List<Ordine> getOrdiniMezzo() {
+	public PriorityQueue<Ordine> getOrdiniMezzo() {
 		return ordiniMezzo;
 	}
 
@@ -183,7 +164,9 @@ public class Mezzo {
 	 * @param ordiniMezzo the ordiniMezzo to set
 	 */
 	public void setOrdiniMezzo(List<Ordine> ordiniMezzo) {
-		this.ordiniMezzo = ordiniMezzo;
+		for (Ordine o : ordiniMezzo) {
+			this.ordiniMezzo.add(o);
+		}
 	}
 
 	public boolean areTuttiGliOrdiniInTimeout() {
@@ -226,39 +209,25 @@ public class Mezzo {
 		this.destinazione = destinazione;
 	}
 
-	public LocalDateTime getDataPartenza() {
-		if (!this.ordiniMezzo.isEmpty()) {
-			return this.ordiniMezzo.get(ordiniMezzo.size() - 1).getDataOra();
-		}
-		return this.dataMezzo;
+	/**
+	 * @param ordiniMezzo the ordiniMezzo to set
+	 */
+	public void setOrdiniMezzo(PriorityQueue<Ordine> ordiniMezzo) {
+		this.ordiniMezzo = ordiniMezzo;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
+	/**
+	 * @return the stato
+	 */
+	public Stato getStato() {
+		return stato;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Mezzo other = (Mezzo) obj;
-		return id == other.id;
-	}
-
-	@Override
-	public String toString() {
-		return "Mezzo [id=" + id + ", tipo=" + tipo + ", pesoMax=" + pesoMax + ", spazioMax=" + spazioMax
-				+ ", velocitaMedia=" + velocitaMedia + ", costoCarburante=" + costoCarburante + "]";
-	}
-
-	public void consegnaOrdini(List<Ordine> ordiniConsegnati) {
-		ordiniMezzo.removeAll(ordiniConsegnati);
-
+	/**
+	 * @param stato the stato to set
+	 */
+	public void setStato(Stato stato) {
+		this.stato = stato;
 	}
 
 }
