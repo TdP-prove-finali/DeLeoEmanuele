@@ -1,7 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -201,10 +200,15 @@ public class Ordine implements Comparable<Ordine> {
 
 	public boolean isProcessable() {
 
-		if (mezzo.getStato().equals(Stato.DISPONIBILE)) {
+		if (mezzo.getStato().equals(Mezzo.Stato.DISPONIBILE)
+				&& mezzo.getPesoOccupato() + this.peso <= mezzo.getPesoMax()
+				&& mezzo.getSpazioOccupato() + this.volume <= mezzo.getSpazioMax()) {
 			return true;
 		}
 
+		if (mezzo.getStato().equals(Mezzo.Stato.DISPONIBILE)) {
+			mezzo.setFlagPieno(true);
+		}
 		return false;
 	}
 

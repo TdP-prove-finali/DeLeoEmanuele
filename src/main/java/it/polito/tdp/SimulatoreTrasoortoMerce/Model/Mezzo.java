@@ -1,19 +1,7 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.PriorityQueue;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class Mezzo {
@@ -25,6 +13,8 @@ public class Mezzo {
 	int id;
 	String tipo;
 	Citta citta;
+	double pesoOccupato;
+	double spazioOccupato;
 	double pesoMax;
 	double spazioMax;
 	double velocitaMedia;
@@ -33,6 +23,8 @@ public class Mezzo {
 	LocalDateTime dataMezzo;
 	Citta destinazione;
 	private Stato stato;
+	boolean flagPieno;
+	int numeroVIaggi;
 
 	public Mezzo(int id, String tipo, double pesoMax, double spazioMax, double velocitaMedia, double costoCarburante,
 			Citta citta, Stato stato) {
@@ -44,8 +36,12 @@ public class Mezzo {
 		this.costoCarburante = costoCarburante;
 		this.citta = citta;
 		this.stato = stato;
+		this.pesoOccupato = 0.0;
+		this.spazioOccupato = 0.0;
 		ordiniMezzo = new PriorityQueue<Ordine>();
 		destinazione = null;
+		flagPieno = false;
+		numeroVIaggi = 0;
 	}
 
 	/**
@@ -150,7 +146,11 @@ public class Mezzo {
 	 * @param pesoOccupato the pesoOccupato to set
 	 */
 	public void assegnaOrdine(Ordine o) {
+		this.spazioOccupato += o.getVolume();
+		this.pesoOccupato += o.getPeso();
+		this.dataMezzo = o.getDataOra();
 		ordiniMezzo.add(o);
+
 	}
 
 	/**
@@ -228,6 +228,62 @@ public class Mezzo {
 	 */
 	public void setStato(Stato stato) {
 		this.stato = stato;
+	}
+
+	/**
+	 * @return the pesoOccupato
+	 */
+	public double getPesoOccupato() {
+		return pesoOccupato;
+	}
+
+	/**
+	 * @param pesoOccupato the pesoOccupato to set
+	 */
+	public void setPesoOccupato(double pesoOccupato) {
+		this.pesoOccupato = pesoOccupato;
+	}
+
+	/**
+	 * @return the spazioOccupato
+	 */
+	public double getSpazioOccupato() {
+		return spazioOccupato;
+	}
+
+	/**
+	 * @param spazioOccupato the spazioOccupato to set
+	 */
+	public void setSpazioOccupato(double spazioOccupato) {
+		this.spazioOccupato = spazioOccupato;
+	}
+
+	/**
+	 * @return the flagPieno
+	 */
+	public boolean isFlagPieno() {
+		return flagPieno;
+	}
+
+	/**
+	 * @param flagPieno the flagPieno to set
+	 */
+	public void setFlagPieno(boolean flagPieno) {
+		this.flagPieno = flagPieno;
+	}
+
+	/**
+	 * @return the numeroVIaggi
+	 */
+	public int getNumeroVIaggi() {
+		return numeroVIaggi;
+	}
+
+	/**
+	 * @param numeroVIaggi the numeroVIaggi to set
+	 */
+	public void aggiungiVIaggio() {
+		this.numeroVIaggi++;
 	}
 
 }

@@ -9,14 +9,12 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
-import it.polito.tdp.SimulatoreTrasoortoMerce.Model.OrdineConsegnato;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
 
 public class DAO {
@@ -24,8 +22,7 @@ public class DAO {
 	public void getCitta(Map<String, Citta> mapCitta) { // RESTITUISCE TUTTE LE CITTA'
 
 		final String sql = "SELECT Partenza, Destinazione " + "FROM tratte "
-				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus' OR Mezzo_di_trasporto = 'Treno' "
-				+ ";";
+				+ "WHERE  Mezzo_di_trasporto = 'Aereo' OR Mezzo_di_trasporto = 'Autobus'" + ";";
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -206,8 +203,8 @@ public class DAO {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
 			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
-					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + o.getDataOra() + "','" + mezzo.getId()
-					+ "','" + mezzo.getTipo() + "');");
+					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + mezzo.getDataMezzo() + "','"
+					+ mezzo.getId() + "','" + mezzo.getTipo() + "');");
 			statement.close();
 			conn.close();
 
@@ -216,31 +213,6 @@ public class DAO {
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
 
-	}
-
-	public List<OrdineConsegnato> tracciaOrdine(int id, Map<String, Citta> mapCitta) {
-		List<OrdineConsegnato> ordini = new LinkedList<OrdineConsegnato>();
-		final String sql = "SELECT* FROM ordini_consegnati WHERE ID =" + id + ";";
-		try {
-
-			Connection conn = ConnectDB.getConnection();
-			PreparedStatement st = conn.prepareStatement(sql);
-			ResultSet rs = st.executeQuery();
-
-			while (rs.next()) {
-
-				ordini.add(new OrdineConsegnato(rs.getInt("ID"), mapCitta.get(rs.getString("citta_consegna")),
-						rs.getTimestamp("data").toLocalDateTime(), rs.getInt("ID_mezzo"), rs.getString("tipo_mezzo")));
-			}
-			st.close();
-			conn.close();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Errore di connessione al Database.");
-		}
-
-		return ordini;
 	}
 
 }

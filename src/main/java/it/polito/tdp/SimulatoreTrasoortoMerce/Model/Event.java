@@ -6,7 +6,7 @@ import java.time.LocalTime;
 public class Event implements Comparable<Event> {
 
 	public enum EventType {
-		NUOVO_ORDINE, ORDINE_IN_CORSO, TIMEOUT, ORDINE_CONSEGNATO
+		NUOVO_ORDINE, ORDINE_IN_CORSO
 	}
 
 	private Ordine ordine;

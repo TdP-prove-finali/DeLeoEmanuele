@@ -8,7 +8,6 @@ public class TestModel {
 
 		Model m = new Model();
 		// LocalDateTime data = LocalDateTime.now();
-		Mezzo mezzo2 = new Mezzo(1, "Tir", 2.3, 3.5, 4.5, 1.6, m.getMappaCitta().get("Gorizia"));
 		// Mezzo mezzo1 = new
 		// Mezzo(1,"Autobus",2.3,3.5,4.5,1.6,m.getMappaCitta().get("Gorizia"));
 		// m.aggiungiMezzo(mezzo1);

@@ -1,6 +1,7 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,7 +9,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
-
 import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
 
 public class Model {
@@ -35,9 +35,6 @@ public class Model {
 		listaMetropoli.add(mapCitta.get("Bologna"));
 		listaMetropoli.add(mapCitta.get("Napoli"));
 		listaMetropoli.add(mapCitta.get("Palermo"));
-		// Reggio calabria
-		// bari
-		// Cagliari
 
 	}
 
@@ -59,7 +56,7 @@ public class Model {
 													// VEICOLO IN QUESTIONE
 				arco.setId(codiciMezzi);
 				arco.setTipo(t.getMezzoTrasporto());
-				
+
 				grafo.setEdgeWeight(arco,
 						this.getPesoComplessivo(t.getDistanza(),
 								mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
@@ -106,7 +103,7 @@ public class Model {
 			double costoCarburante) { // PER TENERE TRACCIA USO UNA MAPPA < "tipo veicolo" , veicolo >
 		Citta c = null;
 		Mezzo nuovo = new Mezzo(mapMezziConSpecifiche.size(), tipo, pesoMax, spazioMax, velocitaMedia, costoCarburante,
-				c);
+				c, null);
 		mapMezziConSpecifiche.remove(tipo);
 		mapMezziConSpecifiche.put(tipo, nuovo);
 		System.out.println("mezzo aggiunto correttamente");
@@ -114,10 +111,6 @@ public class Model {
 
 	public Map<String, Mezzo> getMezziConSpecifiche() {
 		return this.mapMezziConSpecifiche;
-	}
-
-	public List<Citta> getMetropoli() {
-		return this.listaMetropoli;
 	}
 
 	public String getOrdini() {
@@ -128,10 +121,6 @@ public class Model {
 		return this.dijkstra;
 	}
 
-	public Map<Citta, List<Ordine>> getMappaOrdini() {
-		return this.mappaOrdiniConPartenza;
-	}
-
 	public void clearTableOrdini() {
 		dao.clearTableOrdini();
 	}
@@ -140,31 +129,8 @@ public class Model {
 		dao.clearTableOrdiniConsegnati();
 	}
 
-	public String tracciaOrdine(int id) {
-		double costo = 0.0;
-		List<OrdineConsegnato> tappe = dao.tracciaOrdine(id, mapCitta);
-
-		if (tappe.size() == 1) {
-			return tappe.toString();
-
-		}
-		for (int count = 1; count < tappe.size(); count++) {
-			if (tappe.get(count - 1).getTipo().equals(tappe.get(count).getTipo())
-					&& tappe.get(count - 1).getId_mezzo() == tappe.get(count).getId_mezzo()) {
-
-				for (Arco passo : grafo.edgeSet()) {
-					if (passo.getTipo().equals(tappe.get(count).getTipo())
-							&& passo.getSorgente().equals(tappe.get(count - 1).getCittaConsegna())
-							&& passo.getDestinazione().equals(tappe.get(count).getCittaConsegna())) {
-						costo += mapMezziConSpecifiche.get(passo.getTipo()).getCostoCarburante() * passo.getDistanza();
-						break;
-					}
-				}
-			}
-
-		}
-
-		return tappe.toString() + "\n\n COSTO=" + costo + " $";
+	public List<Citta> getMetropoli() {
+		return this.listaMetropoli;
 	}
 
 }

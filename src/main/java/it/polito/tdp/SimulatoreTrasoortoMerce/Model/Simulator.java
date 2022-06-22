@@ -1,39 +1,34 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDate;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.TreeMap;
-
+import java.util.concurrent.TimeUnit;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
-import it.emanueledeleo.ProjectTesi.DAO.DAO;
-import it.emanueledeleo.ProjectTesi.Model.Event.EventType;
-import javafx.scene.control.ProgressBar;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Event.EventType;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo.Stato;
+import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
 
 public class Simulator {
 
+	public Date startDate = null;
 	public DAO dao;
-	public List<Citta> listaMetropoli;
+	public LocalDateTime tempo;
 	Graph<Citta, Arco> grafo;
 	DijkstraShortestPath<Citta, Arco> dijkstra;
 	Map<String, Mezzo> mapMezziConSpecifiche;
-	Map<Citta, List<Mezzo>> mappaMezzi;
-	Map<Citta, List<Mezzo>> mappaAerei;
-	List<Mezzo> aereiPartiti;
-	List<Ordine> ordiniInViaggio;
-	int i;
+	Map<Integer, Mezzo> mapMezzi;
+	Map<String, Citta> mapCitta;
 	double percentualeRiempimento;
 
 	// Eventi
@@ -45,18 +40,11 @@ public class Simulator {
 	private int nOrdiniGiornalieri;
 	private int nGiorni;
 	private LocalDate dataInizio;
-	private LocalTime oraInizio; // ORE DI TRASPORTO GIORNALIERE
-	private LocalTime oraFine; // = LocalTime.of(8, 00); INPUT
-	private int timeout; // = Duration.ofMinutes(x)
+	private LocalTime oraInizio;
+	private LocalTime oraFine;
+	private int timeout;
 
 	// Stato del mondo
-
-	private int nOrdiniInAttesa;
-	private Map<Citta, PriorityQueue<Ordine>> mappaOrdiniInAttesa; // OGNI METROPOLI E' UN'AREA IN CUI OPERANO I TIR
-	Map<Citta, PriorityQueue<Ordine>> ordiniVoli; // IL SISTEMA SI OCCUPA DEGLI SMISTAMENTI (SE AD ESEMPIO UN TIR PRENDE
-													// UN ORDINE
-	// Misure in uscita // DESTINATO ALL'AREA DI UNA METROPOLI DIFFERENTE DA QUELLA
-	// IN CUI OPERA
 
 	private int nOrdiniCompletati;
 	private double costoTotale;
@@ -64,25 +52,21 @@ public class Simulator {
 	// Impostazione parametri iniziali
 
 	public void init(DijkstraShortestPath<Citta, Arco> dijkstra, Graph<Citta, Arco> grafo,
-			Map<String, Mezzo> mezziConSpecifiche, Collection<Citta> citta, List<Citta> listaMetropoli,
+			Map<String, Mezzo> mezziConSpecifiche, Map<String, Citta> citta, List<Citta> listaMetropoli,
 			double percentualeRiempimento) {
+
+		startDate = new Date();
 		dao = new DAO();
 		this.grafo = grafo;
 		this.dijkstra = dijkstra;
-		this.listaMetropoli = listaMetropoli;
 		this.mapMezziConSpecifiche = mezziConSpecifiche;
-		List<Citta> listaCittaTotali = new ArrayList<Citta>(citta);
-		this.mappaOrdiniInAttesa = new TreeMap<Citta, PriorityQueue<Ordine>>();
-		this.aereiPartiti = new ArrayList<Mezzo>();
-		this.ordiniInViaggio = new ArrayList<Ordine>();
-		mappaMezzi = new TreeMap<Citta, List<Mezzo>>(); // mappaMezzi contiene i tir
-		mappaAerei = new TreeMap<Citta, List<Mezzo>>(); // mappaAerei contiene gli aerei
-		ordiniVoli = new TreeMap<Citta, PriorityQueue<Ordine>>();
-		this.queue = new PriorityQueue<Event>(); // Inizializzo coda eventi
+		this.mapCitta = citta;
+		List<Citta> listaCittaTotali = new ArrayList<Citta>(citta.values());
+		this.mapMezzi = new TreeMap<Integer, Mezzo>();
+		this.queue = new PriorityQueue<Event>();
 		this.nOrdiniCompletati = 0;
 		this.costoTotale = 0.0;
 		this.percentualeRiempimento = percentualeRiempimento;
-		i = 0; // COUNTER PER GLI ID DEI MEZZI CREATI DINAMICAMENTE
 
 		int contatoreId = 1; // COUNTER PER GLI ID DEGLI ORDINI SIMULATI
 		Citta sorgente = null; // DATI UTILIZZATI PER SIMULARE GLI ORDINI
@@ -99,7 +83,7 @@ public class Simulator {
 		for (Mezzo m : mezziConSpecifiche.values()) { // PESI E VOLUMI MASSIMI GLI ORDINI SONO VINCOLATI ALLA META DEI
 														// PESI E VOLUMI
 			if (m.getPesoMax() >= maxPeso) { // DISPONIBILI PER I TIPI DI MEZZI GENERATI
-				maxPeso = m.getPesoMax() / 100;
+				maxPeso = m.getPesoMax() / 10;
 			}
 			if (m.getSpazioMax() >= maxVolume) {
 				maxVolume = m.getSpazioMax() / 10;
@@ -168,489 +152,171 @@ public class Simulator {
 
 	public void run() {
 
-		while (!this.queue.isEmpty()) {
-			Event nuovoEvento = this.queue.poll();
-			processEvent(nuovoEvento);
-			
-			if(true /*è passata un ora? si */) {
-				// Aggiungere controllo per i mezzi ogni ora, il controllo si fa a partire dalla data dell'ordine ad intervalli stabiliti. Se siamo in un tempo maggiore dell'intervallo eseguire il codice altrimenti no.
-				// aggiorno la data per il check a quella corrente in modo tale da triggerare l'evento dopo l'ora successiva
-				
-				// Controllo dei mezzi
-				// Steo 1 controllo per ogni città il carico dei mezzi, se un mezzo ha superato la percentuale di carico, aggiorno il mezzo sul DB con partito a true (con data partenza e ora) e arrivato a true se è arrivato altrimenti false
-					// Step 1.a Per sapere se è arrivato calcolo il tempo di percorrenza e vedo se è passato il tempo necessario. Se si, arrivato è true altrimenti false.
-				
-				// Step 1 se il mezzo è arrivato aggiorno tutti gli ordini sul DB che erano contenuti nel mezzo
-				
-				
-			}else { /* non faccio niente */}
-			
+		boolean check = true;
+
+		while (check) {
+
+			Date currentDate = new Date();
+			long diffInMillies = Math.abs(currentDate.getTime() - startDate.getTime());
+			long diff = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+			if (diff >= 5) {
+				runMezzo();
+			}
+
+			if (!this.queue.isEmpty()) {
+				Event nuovoEvento = this.queue.poll();
+				processEvent(nuovoEvento);
+			} else {
+				check = false;
+			}
 		}
+
 	}
-	
-	
+
+	public void runMezzo() {
+
+		long time = 0;
+		double distanza = 0.0;
+
+		for (int id : mapMezzi.keySet()) {
+
+			if (mapMezzi.get(id).getStato().equals(Stato.OCCUPATO)) {
+
+				mapMezzi.get(id).setStato(Stato.DISPONIBILE);
+			}
+
+			if ((mapMezzi.get(id).getStato().equals(Stato.DISPONIBILE)
+					&& mapMezzi.get(id).getSpazioOccupato() >= (percentualeRiempimento / 100)
+							* mapMezzi.get(id).getSpazioMax()
+					&& mapMezzi.get(id).getPesoOccupato() >= (percentualeRiempimento / 100)
+							* mapMezzi.get(id).getPesoMax())
+					|| mapMezzi.get(id).isFlagPieno() == true) {
+
+				mapMezzi.get(id).setStato(Stato.OCCUPATO);
+				mapMezzi.get(id).setFlagPieno(false);
+				mapMezzi.get(id).aggiungiVIaggio();
+				costoTotale += mapMezzi.get(id).getOrdiniMezzo().peek().getProssimaTratta().getDistanza()
+						* mapMezzi.get(id).getCostoCarburante();
+
+				while (!mapMezzi.get(id).getOrdiniMezzo().isEmpty()) {
+					Ordine ordineDaGestire = mapMezzi.get(id).getOrdiniMezzo().poll();
+					long secondi = Math.round(
+							(ordineDaGestire.getProssimaTratta().getDistanza() / mapMezzi.get(id).getVelocitaMedia())
+									* 3600);
+					distanza = (double) ordineDaGestire.getProssimaTratta().getDistanza();
+					time = secondi;
+					ordineDaGestire.setDataOra(mapMezzi.get(id).getDataMezzo().plusSeconds(secondi));
+
+					if (mapMezzi.get(id).getDestinazione().equals(ordineDaGestire.getDestinazione())) {
+						System.out.println("ordine " + ordineDaGestire.getId() + " CONSEGNATO");
+						dao.addOrdineConsegnato(ordineDaGestire, ordineDaGestire.getDestinazione(), mapMezzi.get(id));
+						nOrdiniCompletati++;
+					} else {
+
+						System.out.println(
+								"step ordine= " + ordineDaGestire.getId() + " a " + mapMezzi.get(id).getDestinazione());
+						ordineDaGestire.setSorgente(mapMezzi.get(id).getDestinazione());
+						dao.addOrdineConsegnato(ordineDaGestire, mapMezzi.get(id).getDestinazione(), mapMezzi.get(id));
+						ordineDaGestire.rimuoviTratta();
+						this.queue.add(new Event(ordineDaGestire, EventType.ORDINE_IN_CORSO,
+								ordineDaGestire.getDataOra().plusHours(1)));
+					}
+				}
+				costoTotale += distanza * mapMezzi.get(id).getCostoCarburante();
+				mapMezzi.get(id).setDataMezzo(mapMezzi.get(id).getDataMezzo().plusSeconds(time));
+				mapMezzi.get(id).setPesoOccupato(0.0);
+				mapMezzi.get(id).setSpazioOccupato(0.0);
+			}
+
+		}
+
+	}
 
 	private void processEvent(Event e) {
 
 		Ordine nuovoOrdine = e.getOrdine();
-		Mezzo aereoTemporaneo = null;
+		Ordine currentOnDB = dao.getOrdineById(nuovoOrdine.getId(), mapCitta);
 
 		switch (e.getTipo()) {
 
 		case NUOVO_ORDINE:
 
-			// ho una code, una degli ordini non evasi 
+			currentOnDB.setPercorso(
+					dijkstra.getPath(currentOnDB.getSorgente(), currentOnDB.getDestinazione()).getEdgeList());
+			Arco prossimo = currentOnDB.getProssimaTratta();
 
-			// step 1 ho un ordine, eseguo dikstra per calcolare il percorso
-			// step 2 faccio update dell'ordine aggiungendo il mezzo dove è stato posizionato) - quindi l'ordine ha un oggetto mezzo all'interno e il mezzo ha al suo interno un indentificativo
-			// step 3 salvo l'ordine su DB tra gli ordini evasi
-			// step 4 se destinazione del mezzo è uguale a destinazione finale dell'ordine ok, altrimenti devi riaggiungere l'ordine alla coda con sorgente cambiata 
-			 
-			
-			
-    	this.queue.add(new Event(nuovoOrdine, EventType.TIMEOUT, nuovoOrdine.getDataOra().plusHours(timeout))); // FINCHE'
-																													// ARRIVA
-																													// UN
-																													// ORDINE
-																													// NUOVO
-																													// LO
-																													// AGGIUNGO
-																													// AGLI
-																													// ORDINI
-																													// IN
-																													// ATTESA
-																													// DELLA
-																													// METROPOLI
-																													// PIU'
-																													// VICINA
-																													// E
-																													// FACCIO
-																													// IL
-																													// TRASPORTO
-																													// DI
-																													// QUELLO
-																													// CHE
-																													// C'ERA
-																													// PRIMA
-			Citta metropoliVicina = this.cercaMetropoliPiùVicina(nuovoOrdine.getSorgente());
+			if (!mapMezzi.containsKey(prossimo.getId())) {
+				mapMezzi.put(prossimo.getId(),
+						new Mezzo(prossimo.getId(), prossimo.getTipo(),
+								mapMezziConSpecifiche.get(prossimo.getTipo()).getPesoMax(),
+								mapMezziConSpecifiche.get(prossimo.getTipo()).getSpazioMax(),
+								mapMezziConSpecifiche.get(prossimo.getTipo()).getVelocitaMedia(),
+								mapMezziConSpecifiche.get(prossimo.getTipo()).getCostoCarburante(),
+								(Citta) prossimo.getSorgente(), Stato.DISPONIBILE));
+				mapMezzi.get(prossimo.getId()).setDestinazione((Citta) prossimo.getDestinazione());
 
-			if (!mappaOrdiniInAttesa.containsKey(metropoliVicina)) {
-				mappaOrdiniInAttesa.put(metropoliVicina, new PriorityQueue<Ordine>());
 			}
-			mappaOrdiniInAttesa.get(metropoliVicina).add(nuovoOrdine);
 
-			if (mapMezziConSpecifiche.containsKey("Aereo")) {
+			currentOnDB.setMezzo(mapMezzi.get(prossimo.getId()));
 
-				for (Citta metropoli : mappaOrdiniInAttesa.keySet()) { // CONTROLLO TUTTE LE AEREE E ORGANIZZO GLI
-																		// ORDINI
+			if (currentOnDB.isProcessable()) {
 
-					while (!mappaOrdiniInAttesa.get(metropoli).isEmpty()) {
-						Ordine ordineDaGestire = mappaOrdiniInAttesa.get(metropoli).poll();
-
-						ordineDaGestire.setProssimaCitta(ordineDaGestire.getDestinazione()); // IMPOSTO LA PROSSIMA
-																								// CITTA'
-																								// AGLI ORDINI
-
-						if (!this.cercaMetropoliPiùVicina(ordineDaGestire.getDestinazione()).equals(metropoli)) {
-							ordineDaGestire
-									.setProssimaCitta(this.cercaMetropoliPiùVicina(ordineDaGestire.getDestinazione())); // SE
-																														// LA
-																														// DESTINAZIONE
-																														// E'
-																														// LONTANA
-																														// IMPOSTO
-																														// LA
-																														// METROPOLI
-																														// A
-																														// CUI
-																														// DOVRA'
-																														// ARRIVARE
-						}
-
-						if ((ordineDaGestire.getSorgente().equals(metropoli)
-								&& listaMetropoli.contains(ordineDaGestire.getDestinazione()))
-								|| (ordineDaGestire.getSorgente().equals(metropoli)
-										&& !this.cercaMetropoliPiùVicina(ordineDaGestire.getDestinazione())
-												.equals(metropoli))) { // SE
-																		// SI
-																		// TRATTA
-																		// DI
-																		// UN
-																		// ORDINE
-																		// BASE
-																		// (ES.
-																		// TORINO->ROMA
-							if (!ordiniVoli.containsKey(metropoli)) { // LO METTO DIRETTAMENTE TRA GLI ORDINI IN VOLO
-								ordiniVoli.put(metropoli, new PriorityQueue<Ordine>()); // CHE SONO A TORINO)
-							}
-							ordiniVoli.get(metropoli).add(ordineDaGestire);
-
-						}
-
-						else { // SE L'ORDINE NON ERA BANALE (tipo Alessanria -> Asti
-								// OPPURE Alessanria (Piemonte) -> Latina (Lazio)
-							if (!mappaMezzi.containsKey(metropoli)) { // PRENDERA' A PRESCINDERE UN TIR
-								mappaMezzi.put(metropoli, new LinkedList<Mezzo>());
-								mappaMezzi.get(metropoli)
-										.add(new Mezzo(i, "Autobus", 100.0, 100.0, 80.0, 8.0, metropoli));
-								mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setId(i);
-								mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setCitta(metropoli);
-								mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1)
-										.setDataMezzo(ordineDaGestire.getDataOra());
-								mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1)
-										.assegnaOrdine(ordineDaGestire);
-								i++;
-
-							} else {
-
-								assegnaOrdiniTir(metropoli, ordineDaGestire);
-							}
-
-						}
-					}
-
-				}
-
-				for (Citta metropoli : ordiniVoli.keySet()) {
-					while (!ordiniVoli.get(metropoli).isEmpty()) {
-
-						Ordine ordineInVolo = ordiniVoli.get(metropoli).poll();
-
-						if (!mappaAerei.containsKey(metropoli)) { // E CERCO DI ASSEGNARLO AD UN AEREO IN QUELLA
-																	// METROPOLI
-																	// (SE ESISTE)
-							mappaAerei.put(metropoli, new LinkedList<Mezzo>());
-							mappaAerei.get(metropoli).add(new Mezzo(i, "Aereo", 100.0, 100.0, 200.0, 8.0, metropoli));
-							mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1)
-									.assegnaOrdine(ordineInVolo);
-							mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1) // SE SONO DENTRO
-																								// ALL'IF IMPOSTO
-																								// COME DESTINAZIONE
-									.setDestinazione(ordineInVolo.getProssimaCitta()); // DELL'AEREO LA PROSSIMA
-																						// CITTA' DELL'ORDINE
-							mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1)
-									.setDataMezzo(ordineInVolo.getDataOra());
-							;
-							i++;
-						}
-
-						else { // ALTRIMENTI FACCIO UN CHECK DEGLI AEREI CHE CI SONO
-
-							for (Mezzo aereo : mappaAerei.get(metropoli)) {
-
-								if ((aereo.getDataMezzo().isBefore(ordineInVolo.getDataOra())
-										&& aereo.getDestinazione() == null)
-										|| (aereo.getDataMezzo().isBefore(ordineInVolo.getDataOra())
-												&& aereo.getDestinazione().equals(ordineInVolo.getProssimaCitta()))) {
-
-									if (aereo.assegnaOrdine(ordineInVolo) == false) { // L'AEREO
-																						// E'
-																						// PIENO
-																						// E
-																						// PUO'
-										// PARTIRE
-										ordiniInViaggio
-												.addAll(consegnaAerei(metropoli, aereo.getDestinazione(), aereo));
-
-									} else {
-
-										if (aereo.getDestinazione() == null) { // SE HA DESTINAZIONE NULLA VUOL DIRE
-																				// CHE ARRIVA DA UN VIAGGIO
-											aereo.setDestinazione(ordineInVolo.getProssimaCitta()); // ED E'
-																									// DISPONIBILE
-																									// (VEDI IN
-																									// BASSO
-																									// consegnaAerei()
-										}
-										aereoTemporaneo = aereo;
-										System.out.println("Preso ordine " + ordineInVolo.getId() + " cittaMetropoli: "
-												+ metropoli);
-										dao.addOrdineConsegnato(ordineInVolo, metropoli, aereoTemporaneo);
-										break;
-
-									}
-
-								}
-							}
-
-							if (!aereiPartiti.isEmpty()) {
-
-								for (Mezzo aereo : aereiPartiti) { // AGGIORNO MAPPA AEREI CON GLI AEREI CHE SONO
-																	// PARTITI E CAMBIANO
-																	// RESIDENZA
-									if (!mappaAerei.containsKey(aereo.getDestinazione())) {
-										mappaAerei.put(aereo.getDestinazione(), new ArrayList<Mezzo>());
-									}
-									mappaAerei.get(aereo.getCitta()).remove(aereo);
-									aereo.setCitta(aereo.getDestinazione());
-									aereo.setDestinazione(null);
-									mappaAerei.get(aereo.getCitta()).add(aereo);
-
-								}
-								aereiPartiti.clear();
-							}
-
-							if (aereoTemporaneo == null) { // SE NON HO TROVATO UN AEREO PER L'ORDINE, NE CREO UNO
-								mappaAerei.get(metropoli)
-										.add(new Mezzo(i, "Aereo", 100.0, 100.0, 80.0, 8.0, metropoli));
-								mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1)
-										.setDataMezzo(ordineInVolo.getDataOra());
-								mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1)
-										.setDestinazione(ordineInVolo.getProssimaCitta());
-								mappaAerei.get(metropoli).get(mappaAerei.get(metropoli).size() - 1)
-										.assegnaOrdine(ordineInVolo);
-								i++;
-							} else {
-								if (aereoTemporaneo.areTuttiGliOrdiniInTimeout()
-										&& aereoTemporaneo.getSpazioOccupato() >= (aereoTemporaneo.getSpazioMax()
-												* percentualeRiempimento / 100)
-										&& aereoTemporaneo.getPesoOccupato() >= (aereoTemporaneo.getPesoMax()
-												* percentualeRiempimento / 100)) {
-									ordiniInViaggio.addAll(consegnaAerei(metropoli, aereoTemporaneo.getDestinazione(),
-											aereoTemporaneo));
-								}
-							}
-
-						}
-
-					}
-				}
-
-				for (Ordine o : ordiniInViaggio) {
-
-					if (!mappaOrdiniInAttesa.containsKey(o.getSorgente())) {
-						mappaOrdiniInAttesa.put(o.getSorgente(), new PriorityQueue<Ordine>());
-					}
-
-					mappaOrdiniInAttesa.get(o.getSorgente()).add(o);
-				}
-
-				ordiniInViaggio.clear();
+				currentOnDB.getMezzo().assegnaOrdine(currentOnDB);
 
 			} else {
-				for (Citta metropoli : mappaOrdiniInAttesa.keySet()) {
 
-					while (!mappaOrdiniInAttesa.get(metropoli).isEmpty()) {
-						Ordine ordineDaGestire = mappaOrdiniInAttesa.get(metropoli).poll();
-						ordineDaGestire.setProssimaCitta(ordineDaGestire.getDestinazione());
-						if (!mappaMezzi.containsKey(metropoli)) { // PRENDERA' A PRESCINDERE UN TIR
-							mappaMezzi.put(metropoli, new LinkedList<Mezzo>());
-							mappaMezzi.get(metropoli).add(new Mezzo(i, "Autobus", 100.0, 100.0, 80.0, 8.0, metropoli));
-							mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setId(i);
-							mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setCitta(metropoli);
-							mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1)
-									.setDataMezzo(ordineDaGestire.getDataOra());
-							mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1)
-									.assegnaOrdine(ordineDaGestire);
-							i++;
+				this.queue.add(
+						new Event(currentOnDB, EventType.ORDINE_IN_CORSO, currentOnDB.getDataOra().plusHours(timeout)));
 
-						} else {
-
-							assegnaOrdiniTir(metropoli, ordineDaGestire);
-						}
-					}
-				}
 			}
 
 			break;
+		case ORDINE_IN_CORSO:
 
-		case TIMEOUT:
-			System.out.println("TIMEOUT ORDINE: " + nuovoOrdine.getId());
-			nuovoOrdine.setTimeout(true);
-			break;
+			currentOnDB = nuovoOrdine;
+			currentOnDB.setTimeout(true);
+			Arco passo = currentOnDB.getProssimaTratta();
 
-		case ORDINE_CONSEGNATO:
-
-		}
-
-	}
-
-	private void percorsoPresaOrdini(Citta start, Mezzo mezzo) { // PERCORSO PER I TIR PER PRELEVARE GLI ORDINI DI
-																	// COMPETENZA DELLA LORO SEDE
-		List<Citta> percorsoCitta = new LinkedList<Citta>(); // CHE GLI SONO STATI ASSEGNATI
-		percorsoCitta.add(start);
-		List<Arco> percorso = new LinkedList<Arco>();
-
-		for (Ordine ordineMezzo : mezzo.getOrdiniMezzo()) {
-			if (!percorsoCitta.contains(ordineMezzo.getSorgente())) { // ESSI ORGANIZZANO IL PERCORSO PIU' BREVE
-																		// FILTRANDO LE SORGENTI DEGLI ORDINI
-				percorsoCitta.add(ordineMezzo.getSorgente());
-			}
-		}
-
-		for (int c = 1; c < percorsoCitta.size(); c++) {
-			percorso.addAll(dijkstra.getPath(percorsoCitta.get(c - 1), percorsoCitta.get(c)).getEdgeList()); // LO
-																												// SHORTEST
-																												// PATH
-																												// IMPLEMENTATO
-																												// DALL'ALGORITMO
-																												// DI
-																												// DIJKSTRA
-																												// RESTITUISCE
-																												// IL
-																												// PERCORSO
-																												// TRA
-																												// LE
-																												// CITTA'
-		}
-		mezzo.setDataMezzo(mezzo.getDataPartenza());
-		for (Arco passo : percorso) {
-			camminoPresaOrdini(mezzo, passo,
-					(int) Math.round(((passo.getDistanza() / mezzo.getVelocitaMedia()) * 3600)));
-		}
-
-	}
-
-	public void camminoPresaOrdini(Mezzo m, Arco arco, int ora) { // OGNI VOLTA CHE ATTRAVERSA UN NODO CONTROLLA SE C'E'
-																	// L'ORDINE DA PRENDERE
-		m.setCitta((Citta) arco.getDestinazione()); // ED AGGIORNA LA SUA CITTA' E LA SUA DATA
-		m.setDataMezzo(m.getDataMezzo().plusSeconds(ora));
-		costoTotale += m.getCostoCarburante() * arco.getDistanza();
-		Collections.sort(m.getOrdiniMezzo());
-		for (Ordine ordineMezzo : m.getOrdiniMezzo()) {
-			ordineMezzo.setDataOra(m.getDataMezzo());
-			if (ordineMezzo.getSorgente().equals((Citta) arco.getDestinazione())) {
-				System.out.println("Preso ordine " + ordineMezzo.getId() + " il " + ordineMezzo.getDataOra());
-				dao.addOrdineConsegnato(ordineMezzo, ordineMezzo.getSorgente(), m);
-			}
-
-		}
-	}
-
-	public void percorsoConsegnaOrdini(Citta start, Mezzo mezzo) { // IN GRAN PARTE E' LA FOTOCOPIA DI
-																	// percorsoPresaOrdini()
-																	// MA QUI CAMBIA IL CAMMINO
-		List<Citta> percorsoCitta = new LinkedList<Citta>();
-		percorsoCitta.add(start);
-		List<Arco> percorso = new LinkedList<Arco>();
-
-		for (Ordine ordineMezzo : mezzo.getOrdiniMezzo()) {
-
-			if (ordineMezzo.getDestinazione().equals(ordineMezzo.getProssimaCitta())) {
-				if (!percorsoCitta.contains(ordineMezzo.getDestinazione())) {
-					percorsoCitta.add(ordineMezzo.getDestinazione());
-				}
-			} else {
-				if (!percorsoCitta.contains(this.cercaMetropoliPiùVicina(mezzo.getCitta()))) {
-					percorsoCitta.add(this.cercaMetropoliPiùVicina(mezzo.getCitta()));
-				}
-			}
-		}
-
-		for (int c = 1; c < percorsoCitta.size(); c++) {
-
-			percorso.addAll(dijkstra.getPath(percorsoCitta.get(c - 1), percorsoCitta.get(c)).getEdgeList());
-		}
-
-		for (Arco passo : percorso) {
-			camminoConsegnaOrdini(mezzo, passo,
-					(int) Math.round((passo.getDistanza() / mezzo.getVelocitaMedia())) * 3600);
-		}
-
-		mezzo.scaricaMerce();
-
-	}
-
-	private void camminoConsegnaOrdini(Mezzo mezzo, Arco passo, int ora) {
-
-		List<Ordine> ordiniConsegnati = new ArrayList<Ordine>();
-		mezzo.setCitta((Citta) passo.getDestinazione());
-		mezzo.setDataMezzo(mezzo.getDataMezzo().plusSeconds(ora));
-		costoTotale += mezzo.getCostoCarburante() * passo.getDistanza();
-
-		for (Ordine ordineMezzo : mezzo.getOrdiniMezzo()) {
-			ordineMezzo.setDataOra(mezzo.getDataMezzo());
-
-			if (ordineMezzo.getDestinazione().equals((Citta) passo.getDestinazione())) {
-				System.out.println("Consegna ordine " + ordineMezzo.getId() + " alle " + ordineMezzo.getDataOra()
-						+ "con " + mezzo.getTipo() + " id:" + mezzo.getId() + " data: " + ordineMezzo.getDataOra()
-						+ " città: " + ordineMezzo.getDestinazione());
-				dao.addOrdineConsegnato(ordineMezzo, ordineMezzo.getDestinazione(), mezzo);
-				this.queue.add(new Event(ordineMezzo, EventType.ORDINE_CONSEGNATO, ordineMezzo.getDataOra()));
-				ordiniConsegnati.add(ordineMezzo);
-				nOrdiniCompletati++;
-			}
-
-			if (mapMezziConSpecifiche.containsKey("Aereo")) {
-				if (passo.getDestinazione().equals(this.cercaMetropoliPiùVicina(mezzo.getCitta()))
-						&& !ordineMezzo.getDestinazione().equals(ordineMezzo.getProssimaCitta())) { // SCARICA GLI
-																									// ORDINI
-					// AEREI
-
-					ordineMezzo.setSorgente(mezzo.getCitta());
-					System.out.println("QUESTO ORDINE PRENDE L'AEREO : ID: " + ordineMezzo.getId() + "per "
-							+ ordineMezzo.getProssimaCitta());
-					dao.addOrdineConsegnato(ordineMezzo, mezzo.getCitta(), mezzo);
-					ordiniConsegnati.add(ordineMezzo);
-
-					if (!ordiniVoli.containsKey(mezzo.getCitta())) {
-						ordiniVoli.put(mezzo.getCitta(), new PriorityQueue<Ordine>());
-					}
-
-					if (!ordiniVoli.get(mezzo.getCitta()).contains(ordineMezzo)) {
-						ordiniVoli.get(mezzo.getCitta()).add(ordineMezzo);
-					}
-
-				}
-			}
-
-		}
-
-		mezzo.consegnaOrdini(ordiniConsegnati); // TOLGO GLI ORDINI DAL TIR
-	}
-
-	public List<Ordine> consegnaAerei(Citta metropoliSorgente, Citta metropoliDestinazione, Mezzo aereo) {
-
-		List<Ordine> ordiniInViaggio = new ArrayList<Ordine>();
-		Arco voloAereo = null;
-
-		for (Arco passo : grafo.edgeSet()) {
-			if (passo.getTipo().equals("Aereo") && passo.getSorgente().equals(metropoliSorgente)
-					&& passo.getDestinazione().equals(metropoliDestinazione)) {
-				voloAereo = passo;
+			if (passo == null) {
+				System.out.println("ordine " + currentOnDB.getId() + " consegnato a " + currentOnDB.getDestinazione()
+						+ " da " + currentOnDB.getSorgente() + " \n\n tappe: " + currentOnDB.getPercorso());
+				dao.addOrdineConsegnato(currentOnDB, currentOnDB.getDestinazione(), currentOnDB.getMezzo());
 				break;
 			}
-		}
 
-		if (voloAereo != null) {
-			int secondi = (int) Math.round((voloAereo.getDistanza() / aereo.getVelocitaMedia()) * 3600);
-			aereo.setDataMezzo(aereo.getDataPartenza().plusSeconds(secondi));
-			costoTotale += aereo.getCostoCarburante() * voloAereo.getDistanza();
-			for (Ordine ordineAereo : aereo.getOrdiniMezzo()) {
+			if (!mapMezzi.containsKey(passo.getId())) {
+				mapMezzi.put(passo.getId(),
+						new Mezzo(passo.getId(), passo.getTipo(),
+								mapMezziConSpecifiche.get(passo.getTipo()).getPesoMax(),
+								mapMezziConSpecifiche.get(passo.getTipo()).getSpazioMax(),
+								mapMezziConSpecifiche.get(passo.getTipo()).getVelocitaMedia(),
+								mapMezziConSpecifiche.get(passo.getTipo()).getCostoCarburante(),
+								(Citta) passo.getSorgente(), Stato.DISPONIBILE));
+				mapMezzi.get(passo.getId()).setDestinazione((Citta) passo.getDestinazione());
 
-				ordineAereo.setDataOra(aereo.getDataMezzo());
-				ordineAereo.setSorgente(metropoliDestinazione);
+			}
 
-				if (ordineAereo.getDestinazione().equals(metropoliDestinazione)) {
-					System.out.println("ordine " + ordineAereo.getId() + " consegnato il " + ordineAereo.getDataOra()
-							+ " con aereo id: " + aereo.getId() + "a " + metropoliDestinazione);
+			currentOnDB.setMezzo(mapMezzi.get(passo.getId()));
 
-					dao.addOrdineConsegnato(ordineAereo, metropoliDestinazione, aereo);
-					this.queue.add(new Event(ordineAereo, EventType.ORDINE_CONSEGNATO, ordineAereo.getDataOra()));
-					nOrdiniCompletati++;
+			if (!mapMezzi.get(passo.getId()).getOrdiniMezzo().contains(currentOnDB)) {
+				if (currentOnDB.isProcessable()) {
+
+					mapMezzi.get(passo.getId()).assegnaOrdine(currentOnDB);
+					mapMezzi.get(passo.getId()).setDataMezzo(currentOnDB.getDataOra());
+
 				} else {
-					ordineAereo.setSorgente(metropoliDestinazione);
-					ordiniInViaggio.add(ordineAereo);
-					dao.addOrdineConsegnato(ordineAereo, metropoliDestinazione, aereo);
-					System.out.println(
-							"step metropoli ordine: " + ordineAereo.getId() + " città: " + metropoliDestinazione);
+					this.queue.add(
+							new Event(currentOnDB, EventType.ORDINE_IN_CORSO, currentOnDB.getDataOra().plusHours(1)));
 
 				}
 			}
 
-			aereo.scaricaMerce();
-			aereiPartiti.add(aereo);
-		} else {
-			System.out.println("Impossibile trovare la tratta aerea");
-
+			break;
 		}
 
-		return ordiniInViaggio;
 	}
 
-	/**
-	 * @param nOrdiniGiornalieri the nOrdiniGiornalieri to set
-	 */
 	public void setnOrdiniGiornalieri(int nOrdiniGiornalieri) {
 		this.nOrdiniGiornalieri = nOrdiniGiornalieri;
 	}
@@ -677,24 +343,10 @@ public class Simulator {
 	}
 
 	/**
-	 * @return the nOrdiniInAttesa
-	 */
-	public int getnOrdiniInAttesa() {
-		return nOrdiniInAttesa;
-	}
-
-	/**
 	 * @return the nOrdiniCompletati
 	 */
 	public int getnOrdiniCompletati() {
 		return nOrdiniCompletati;
-	}
-
-	/**
-	 * @return the nGiorni
-	 */
-	public int getnGiorni() {
-		return nGiorni;
 	}
 
 	/**
@@ -704,113 +356,46 @@ public class Simulator {
 		this.nGiorni = nGiorni;
 	}
 
-	/**
-	 * @return the timeout
-	 */
-	public int getTimeout() {
-		return timeout;
+	public int getNtir() {
+		int tir = 0;
+		for (int id : mapMezzi.keySet()) {
+			if (mapMezzi.get(id).getTipo().equals("Autobus")) {
+				tir++;
+			}
+		}
+		return tir;
 	}
 
 	/**
 	 * @return the dataInizio
 	 */
+	public int getNaerei() {
+		int aerei = 0;
+		for (int id : mapMezzi.keySet()) {
+			if (mapMezzi.get(id).getTipo().equals("Aereo")) {
+				aerei++;
+			}
+		}
+		return aerei;
+	}
 
 	public void setDataInizio(LocalDate dataInizio) {
 		this.dataInizio = dataInizio;
 	}
 
 	/**
-	 * @return the nTir
+	 * @return the costoTotale
 	 */
-	public int getnTir() {
-
-		int s = 0;
-
-		for (Citta c : mappaMezzi.keySet()) {
-			s += mappaMezzi.get(c).size();
-		}
-
-		return s;
+	public String getCostoTotale() {
+		return String.format("%.0f", this.costoTotale);
 	}
 
-	public int getNnAerei() {
-
-		int n = 0;
-		for (Citta c : mappaAerei.keySet()) {
-			n += mappaAerei.get(c).size();
-		}
-		return n;
+	/**
+	 * @param percentualeRiempimento the percentualeRiempimento to set
+	 */
+	public void setPercentualeRiempimento(double percentualeRiempimento) {
+		this.percentualeRiempimento = percentualeRiempimento;
 	}
 
-	public Citta cercaMetropoliPiùVicina(Citta citta) {
-		Citta piuVicina = null;
-		double passiMin = 999999999.9;
-		double passi = 0.0;
-
-		for (Citta c : listaMetropoli) {
-
-			if (citta.equals(c)) {
-				return citta;
-			}
-
-			for (Arco a : dijkstra.getPath(c, citta).getEdgeList()) {
-
-				passi += a.getDistanza();
-			}
-
-			if (passi < passiMin) {
-				passiMin = passi;
-				piuVicina = c;
-				passi = 0.0;
-			}
-		}
-		return piuVicina;
-	}
-
-	public void assegnaOrdiniTir(Citta metropoli, Ordine ordineDaGestire) {
-
-		Mezzo mezzoTemporaneo = null;
-		for (Mezzo m : mappaMezzi.get(metropoli)) {
-
-			if (m.getDataMezzo().isBefore(ordineDaGestire.getDataOra())) {
-
-				if (m.assegnaOrdine(ordineDaGestire) == false) {
-					percorsoPresaOrdini(m.getCitta(), m);
-					percorsoConsegnaOrdini(metropoli, m);
-
-				} else {
-					mezzoTemporaneo = m;
-					break;
-
-				}
-
-			}
-
-		}
-
-		if (mezzoTemporaneo == null) {
-			mappaMezzi.get(metropoli).add(new Mezzo(i, "Autobus", 100.0, 100.0, 80.0, 8.0, metropoli));
-			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setId(i);
-			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).setCitta(metropoli);
-			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1)
-					.setDataMezzo(ordineDaGestire.getDataOra());
-			mappaMezzi.get(metropoli).get(mappaMezzi.get(metropoli).size() - 1).assegnaOrdine(ordineDaGestire);
-			i++;
-
-		} else {
-			if (mezzoTemporaneo.areTuttiGliOrdiniInTimeout()
-					&& mezzoTemporaneo.getSpazioOccupato() >= mezzoTemporaneo.getSpazioMax()
-							* (percentualeRiempimento / 100)
-					&& mezzoTemporaneo.getPesoOccupato() >= mezzoTemporaneo.getPesoMax()
-							* (percentualeRiempimento / 100)) {
-				percorsoPresaOrdini(mezzoTemporaneo.getCitta(), mezzoTemporaneo);
-				percorsoConsegnaOrdini(metropoli, mezzoTemporaneo);
-			}
-		}
-	}
-
-	public double getCostoTotale() {
-		return this.costoTotale;
-	}
-
+	
 }
