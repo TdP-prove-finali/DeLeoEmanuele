@@ -215,4 +215,32 @@ public class DAO {
 
 	}
 
+	public String tracciaOrdine(int id) { // AGGIUNGE ORDINE CONSEGNATO SUL DB
+
+		String output = "";
+		final String sql = "SELECT* FROM ordini_consegnati WHERE ID = " + id + ";";
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				output += rs.getString("citta_consegna") + "  mezzo:" + rs.getInt("ID_mezzo") + " "
+						+ rs.getString("tipo_mezzo") + "  data: " + rs.getTimestamp("data").toLocalDateTime();
+			}
+			
+			if (output.equals("")) {
+				output+="Ordine non ancora partito";
+			}
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+
+		return output;
+	}
 }

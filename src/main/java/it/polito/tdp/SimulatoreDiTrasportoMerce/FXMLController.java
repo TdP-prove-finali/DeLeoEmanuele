@@ -1,15 +1,14 @@
 package it.polito.tdp.SimulatoreDiTrasportoMerce;
 
 import java.net.URL;
-
+import javafx.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Model;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Simulator;
-import it.polito.tdp.SimulatoreTrasoortoMerce.Model.SimulatoreProvvisorio;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
@@ -21,7 +20,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 
 	private Model model;
-	private SimulatoreProvvisorio simulatore;
+	private Simulator simulatore;
 
 	@FXML
 	private ResourceBundle resources;
@@ -43,6 +42,12 @@ public class FXMLController {
 
 	@FXML
 	private TextField costoTir;
+
+	@FXML
+	private Label percentualeTempo;
+
+	@FXML
+	private Label percentualeCosto;
 
 	@FXML
 	private RadioButton ticAereo;
@@ -117,6 +122,8 @@ public class FXMLController {
 	@FXML
 	void creaGrafo(ActionEvent event) {
 		outputGrafo.clear();
+		outputGenerale.clear();
+		outputOrdini.clear();
 		model.generaMezzo("Autobus", Double.parseDouble(pesoTir.getText().replace(",", ".")),
 				Double.parseDouble(volumeTir.getText().replace(",", ".")),
 				Double.parseDouble(velocitaTir.getText().replace(",", ".")),
@@ -140,29 +147,28 @@ public class FXMLController {
 		outputGenerale.clear();
 		model.clearTableOrdini();
 		model.clearTableOrdiniConsegnati();
-		this.simulatore = new SimulatoreProvvisorio();
+		this.simulatore = new Simulator();
 		simulatore.setnGiorni(Integer.parseInt(nGiorni.getText()));
 		simulatore.setTimeout(Integer.parseInt(timeout.getText()));
 		simulatore.setnOrdiniGiornalieri(Integer.parseInt(ordiniGiornalieri.getText()));
 		simulatore.setDataInizio(LocalDateTime.now().toLocalDate());
 		simulatore.setOraInizio(oraInizio.getValue(), 0);
 		simulatore.setOraFine(oraFine.getValue(), 0);
-		
-		
+
 		simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta(),
 				model.getMetropoli(), riempimento.getValue());
-		
+
 		outputOrdini.appendText(model.getOrdini());
 
 		long runStart = System.currentTimeMillis();
 		simulatore.run();
 		long runEnd = System.currentTimeMillis();
-		
+
 		long runTimeElapsed = runEnd - runStart;
 		System.out.println("**** RUN ELAPSED: " + runTimeElapsed / 1000 + " seconds");
-		
+
 		outputGenerale.appendText("Ordini consegnati = " + simulatore.getnOrdiniCompletati() + "\n\n" + "Tir = "
-				+ simulatore.getnTir() + "\n" + "Aerei = " + simulatore.getNnAerei() + "\n Costo totale="
+				+ simulatore.getNtir() + "\n" + "Aerei = " + simulatore.getNaerei() + "\n Costo totale="
 				+ simulatore.getCostoTotale());
 
 		btnTracciaOrdine.setDisable(false);
@@ -204,6 +210,10 @@ public class FXMLController {
 		assert btnTracciaOrdine != null
 				: "fx:id=\"btnTracciaOrdine\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert percentuale != null : "fx:id=\"percentuale\" was not injected: check your FXML file 'Scene.fxml'.";
+		assert percentualeTempo != null
+				: "fx:id=\"percentualeTempo\" was not injected: check your FXML file 'Scene.fxml'.";
+		assert percentualeCosto != null
+				: "fx:id=\"percentualeCosto\" was not injected: check your FXML file 'Scene.fxml'.";
 		int initialValueInizio = 8;
 		int initialValueFine = 16;
 		SpinnerValueFactory<Integer> valueFactoryInizio = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 12,
@@ -212,6 +222,14 @@ public class FXMLController {
 				initialValueFine);
 		oraInizio.setValueFactory(valueFactoryInizio);
 		oraFine.setValueFactory(valueFactoryFine);
+		percentualeTempo.setText("" + Math.round(percentuale.getValue()) + "%");
+		percentualeCosto.setText("" + Math.round(100.00 - percentuale.getValue()) + "%");
+		percentuale.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+			percentualeTempo.setText("" + Math.round(percentuale.getValue()) + "%");
+			percentualeCosto.setText("" + Math.round(100.00 - percentuale.getValue()) + "%");
+
+		});
 
 	}
 }

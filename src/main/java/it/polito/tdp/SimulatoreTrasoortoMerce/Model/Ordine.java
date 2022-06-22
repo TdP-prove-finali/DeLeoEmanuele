@@ -212,4 +212,10 @@ public class Ordine implements Comparable<Ordine> {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + ", sorgente=" + sorgente + ", destinazione=" + destinazione + ", peso=" + peso
+				+ ", volume=" + volume + ", dataOra=" + dataOra + "]";
+	}
+
 }

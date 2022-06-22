@@ -13,9 +13,9 @@ public class TestSimulator {
 
 		// impostazione parametri
 
-		m.generaMezzo("Aereo", 500, 500, 400, 8);
-		m.generaMezzo("Autobus", 300, 300, 100, 8);
-		sim.setnOrdiniGiornalieri(500);
+		m.generaMezzo("Aereo", 50, 200, 400, 7);
+		m.generaMezzo("Autobus", 50, 300, 100, 2.5);
+		sim.setnOrdiniGiornalieri(1000);
 		sim.setnGiorni(4);
 		sim.setDataInizio(LocalDate.of(2022, 5, 13));
 		sim.setOraInizio(8, 00);
@@ -26,7 +26,7 @@ public class TestSimulator {
 		// output
 		System.out.println(m.creaGrafo(50));
 
-		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta(), m.getMetropoli(), 5);
+		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta(), m.getMetropoli(), 50);
 
 		sim.run();
 

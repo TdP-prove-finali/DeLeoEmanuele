@@ -167,6 +167,7 @@ public class Simulator {
 			if (!this.queue.isEmpty()) {
 				Event nuovoEvento = this.queue.poll();
 				processEvent(nuovoEvento);
+
 			} else {
 				check = false;
 			}
@@ -359,7 +360,7 @@ public class Simulator {
 	public int getNtir() {
 		int tir = 0;
 		for (int id : mapMezzi.keySet()) {
-			if (mapMezzi.get(id).getTipo().equals("Autobus")) {
+			if (mapMezzi.get(id).getTipo().equals("Autobus") && mapMezzi.get(id).getNumeroVIaggi() >= 1) {
 				tir++;
 			}
 		}
@@ -372,7 +373,7 @@ public class Simulator {
 	public int getNaerei() {
 		int aerei = 0;
 		for (int id : mapMezzi.keySet()) {
-			if (mapMezzi.get(id).getTipo().equals("Aereo")) {
+			if (mapMezzi.get(id).getTipo().equals("Aereo") && mapMezzi.get(id).getNumeroVIaggi() >= 1) {
 				aerei++;
 			}
 		}
@@ -397,5 +398,4 @@ public class Simulator {
 		this.percentualeRiempimento = percentualeRiempimento;
 	}
 
-	
 }
