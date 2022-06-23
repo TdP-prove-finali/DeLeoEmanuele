@@ -149,7 +149,7 @@ public class Model {
 
 		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
 
-		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo); //EppsteinKShortestPath<Citta, Arco>(grafo);
+		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo);
 
 		List<GraphPath<Citta, Arco>> paths = pathInspector.getPaths(ordineTracciato.getSorgente(),
 				ordineTracciato.getDestinazione(), 2);
@@ -159,23 +159,29 @@ public class Model {
 
 		List<Arco> edgeBestPath = paths.get(0).getEdgeList();
 		List<Arco> edgeBestSecondPath = paths.get(1).getEdgeList();
-		
-		
-		System.out.println("Best path" + bestPath);
-		
-		double costo = edgeBestPath.stream().mapToDouble(a -> {
-			return getPesoComplessivo(a.getDistanza(), mapMezziConSpecifiche.get(a.getTipo()).getVelocitaMedia(), mapMezziConSpecifiche.get(a.getTipo()).getCostoCarburante(), 50);
-		}).reduce(0, (a,b) -> a+b);
-		
-		System.out.println("Costo best path" + costo); 
-		
-		System.out.println("Second Best path" + bestSecondPath);
 
-		double costoSecond = edgeBestSecondPath.stream().mapToDouble(a -> {
-			return getPesoComplessivo(a.getDistanza(), mapMezziConSpecifiche.get(a.getTipo()).getVelocitaMedia(), mapMezziConSpecifiche.get(a.getTipo()).getCostoCarburante(), 50);
-		}).reduce(0, (a,b) -> a+b);
-		
-		System.out.println("Costo second path" + costoSecond);
+		System.out.println("Best path" + edgeBestPath);
+
+		double costo1 = 0.0;
+		for (Arco arco : edgeBestPath) {
+			costo1 += getPesoComplessivo(arco.getDistanza(),
+					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
+					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
+
+		}
+		System.out.println("costo1=" + costo1);
+		System.out.println("Second Best path" + edgeBestSecondPath);
+
+		double costo2 = 0.0;
+
+		for (Arco arco : edgeBestSecondPath) {
+			costo2 += getPesoComplessivo(arco.getDistanza(),
+					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
+					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
+
+		}
+
+		System.out.println("costo2=" + costo2);
 
 //		double costoViaggio = 0.0;
 //		String output = dao.getOrdineById(id, mapCitta) + "\n";
@@ -211,6 +217,5 @@ public class Model {
 //		}
 //		return output;
 	}
-	
-	
+
 }
