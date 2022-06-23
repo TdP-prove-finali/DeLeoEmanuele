@@ -145,12 +145,16 @@ public class Model {
 		return this.listaMetropoli;
 	}
 
-	public void tracciaOrdine(int id) {
+	public String tracciaOrdine(int id) {
+
+		String output = "";
 
 		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
+		output += ordineTracciato + "\n\n";
+		output += "STORICO:\n";
+		output += dao.tracciaOrdine(id) + "\n\n";
 
 		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo);
-
 		List<GraphPath<Citta, Arco>> paths = pathInspector.getPaths(ordineTracciato.getSorgente(),
 				ordineTracciato.getDestinazione(), 2);
 
@@ -160,7 +164,8 @@ public class Model {
 		List<Arco> edgeBestPath = paths.get(0).getEdgeList();
 		List<Arco> edgeBestSecondPath = paths.get(1).getEdgeList();
 
-		System.out.println("Best path" + edgeBestPath);
+		output += "Percorso migliore: \n" + edgeBestPath;
+		// System.out.println("Best path" + edgeBestPath);
 
 		double costo1 = 0.0;
 		for (Arco arco : edgeBestPath) {
@@ -169,9 +174,11 @@ public class Model {
 					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
 
 		}
-		System.out.println("costo1=" + costo1);
-		System.out.println("Second Best path" + edgeBestSecondPath);
+		// System.out.println("costo1=" + costo1);
+		output += "\nCOSTO: " + costo1 + " €\n\n";
+		// System.out.println("Second Best path" + edgeBestSecondPath);
 
+		output += "Percorso alternativo: \n" + edgeBestSecondPath;
 		double costo2 = 0.0;
 
 		for (Arco arco : edgeBestSecondPath) {
@@ -181,7 +188,11 @@ public class Model {
 
 		}
 
-		System.out.println("costo2=" + costo2);
+		output += "\nCOSTO: " + costo2 + " €\n\n";
+		
+		return output;
+
+		// System.out.println("costo2=" + costo2);
 
 //		double costoViaggio = 0.0;
 //		String output = dao.getOrdineById(id, mapCitta) + "\n";

@@ -119,7 +119,8 @@ public class FXMLController {
 	void cercaOrdine(ActionEvent event) {
 
 		outputOridneSpecifico.clear();
-		model.tracciaOrdine(Integer.parseInt(idOrdine.getText()));
+		outputOridneSpecifico.appendText(model.tracciaOrdine(Integer.parseInt(idOrdine.getText())));
+		;
 	}
 
 	@FXML
