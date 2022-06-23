@@ -26,7 +26,7 @@ public class TestSimulator {
 		// output
 		System.out.println(m.creaGrafo(50));
 
-		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta(), m.getMetropoli(), 50);
+		sim.init(m.getDijkstra(), m.grafo, m.getMezziConSpecifiche(), m.getMappaCitta(), m.getMetropoli(), 1);
 
 		sim.run();
 

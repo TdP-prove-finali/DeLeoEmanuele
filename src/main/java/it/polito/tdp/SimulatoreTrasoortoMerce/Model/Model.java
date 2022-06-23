@@ -7,10 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.interfaces.KShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.EppsteinKShortestPath;
+import org.jgrapht.alg.shortestpath.YenKShortestPath;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
+
 import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
 
 public class Model {
@@ -135,36 +145,72 @@ public class Model {
 		return this.listaMetropoli;
 	}
 
-	public String tracciaOrdine(int id) {
-		double costoViaggio = 0.0;
-		String output = dao.getOrdineById(id, mapCitta)+"\n"; 
-		output += dao.tracciaOrdine(id);
+	public void tracciaOrdine(int id) {
+
 		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
-		LocalDateTime dataNuovoOrdine = ordineTracciato.getDataOra();
 
-		for (Arco arco : dijkstra.getPath(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione())
-				.getEdgeList()) {
-			costoViaggio += arco.getDistanza() * mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante();
-			ordineTracciato.setDataOra(ordineTracciato.getDataOra().plusSeconds(Math.round(
-					(arco.getDistanza() / mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia()) * 3600)));
-		}
+		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo); //EppsteinKShortestPath<Citta, Arco>(grafo);
 
-		output += "\nCOSTO=" + costoViaggio + "  DURATA: "
-				+ Duration.between(dataNuovoOrdine, ordineTracciato.getDataOra()).getSeconds() / 60 + " minuti";
-		if (dijkstra.getPath(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione()).getEdgeList()
-				.size() > 1) {
+		List<GraphPath<Citta, Arco>> paths = pathInspector.getPaths(ordineTracciato.getSorgente(),
+				ordineTracciato.getDestinazione(), 2);
 
-			if (!grafo.getAllEdges(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione()).isEmpty()) {
-				int i = 1;
-				for (Arco tratta : grafo.getAllEdges(ordineTracciato.getSorgente(),
-						ordineTracciato.getDestinazione())) {
-					output += "\n\n PERCORSO ALTERNATIVO " + i + ":\n" + (Citta) tratta.getDestinazione() + " mezzo: "
-							+ tratta.getTipo() + " COSTO="
-							+ tratta.getDistanza() * mapMezziConSpecifiche.get(tratta.getTipo()).getCostoCarburante()+" DURATA: "+Duration.between(dataNuovoOrdine, ordineTracciato.getDataOra()).getSeconds() / 60 + " minuti";
-					i++;
-				}
-			}
-		}
-		return output;
+		List<Citta> bestPath = paths.get(0).getVertexList();
+		List<Citta> bestSecondPath = paths.get(1).getVertexList();
+
+		List<Arco> edgeBestPath = paths.get(0).getEdgeList();
+		List<Arco> edgeBestSecondPath = paths.get(1).getEdgeList();
+		
+		
+		System.out.println("Best path" + bestPath);
+		
+		double costo = edgeBestPath.stream().mapToDouble(a -> {
+			return getPesoComplessivo(a.getDistanza(), mapMezziConSpecifiche.get(a.getTipo()).getVelocitaMedia(), mapMezziConSpecifiche.get(a.getTipo()).getCostoCarburante(), 50);
+		}).reduce(0, (a,b) -> a+b);
+		
+		System.out.println("Costo best path" + costo); 
+		
+		System.out.println("Second Best path" + bestSecondPath);
+
+		double costoSecond = edgeBestSecondPath.stream().mapToDouble(a -> {
+			return getPesoComplessivo(a.getDistanza(), mapMezziConSpecifiche.get(a.getTipo()).getVelocitaMedia(), mapMezziConSpecifiche.get(a.getTipo()).getCostoCarburante(), 50);
+		}).reduce(0, (a,b) -> a+b);
+		
+		System.out.println("Costo second path" + costoSecond);
+
+//		double costoViaggio = 0.0;
+//		String output = dao.getOrdineById(id, mapCitta) + "\n";
+//		output += dao.tracciaOrdine(id);
+//		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
+//		LocalDateTime dataNuovoOrdine = ordineTracciato.getDataOra();
+//
+//		for (Arco arco : dijkstra.getPath(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione())
+//				.getEdgeList()) {
+//			costoViaggio += arco.getDistanza() * mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante();
+//			ordineTracciato.setDataOra(ordineTracciato.getDataOra().plusSeconds(Math.round(
+//					(arco.getDistanza() / mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia()) * 3600)));
+//		}
+//
+//		output += "\nCOSTO=" + costoViaggio + "  DURATA: "
+//				+ Duration.between(dataNuovoOrdine, ordineTracciato.getDataOra()).getSeconds() / 60 + " minuti";
+//		if (dijkstra.getPath(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione()).getEdgeList()
+//				.size() > 1) {
+//
+//			if (!grafo.getAllEdges(ordineTracciato.getSorgente(), ordineTracciato.getDestinazione()).isEmpty()) {
+//				int i = 1;
+//				for (Arco tratta : grafo.getAllEdges(ordineTracciato.getSorgente(),
+//						ordineTracciato.getDestinazione())) {
+//					output += "\n\n PERCORSO ALTERNATIVO " + i + ":\n" + (Citta) tratta.getDestinazione() + " mezzo: "
+//							+ tratta.getTipo() + " COSTO="
+//							+ tratta.getDistanza() * mapMezziConSpecifiche.get(tratta.getTipo()).getCostoCarburante()
+//							+ " DURATA: "
+//							+ Duration.between(dataNuovoOrdine, ordineTracciato.getDataOra()).getSeconds() / 60
+//							+ " minuti";
+//					i++;
+//				}
+//			}
+//		}
+//		return output;
 	}
+	
+	
 }

@@ -98,6 +98,9 @@ public class FXMLController {
 	private TextArea outputGenerale;
 
 	@FXML
+	private Label percentuale2;
+
+	@FXML
 	private Button btnSimula;
 
 	@FXML
@@ -116,7 +119,7 @@ public class FXMLController {
 	void cercaOrdine(ActionEvent event) {
 
 		outputOridneSpecifico.clear();
-		outputOridneSpecifico.appendText(model.tracciaOrdine(Integer.parseInt(idOrdine.getText())));
+		model.tracciaOrdine(Integer.parseInt(idOrdine.getText()));
 	}
 
 	@FXML
@@ -135,7 +138,17 @@ public class FXMLController {
 					Double.parseDouble(costoAereo.getText()));
 		}
 
-		outputGrafo.appendText(model.creaGrafo(percentuale.getValue()));
+		double perc = percentuale.getValue();
+		if (percentuale.getValue() == 0) {
+
+			perc = 1;
+		}
+
+		if (percentuale.getValue() == 100) {
+			perc = 99;
+		}
+
+		outputGrafo.appendText(model.creaGrafo(perc));
 		btnSimula.setDisable(false);
 	}
 
@@ -210,6 +223,7 @@ public class FXMLController {
 		assert btnTracciaOrdine != null
 				: "fx:id=\"btnTracciaOrdine\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert percentuale != null : "fx:id=\"percentuale\" was not injected: check your FXML file 'Scene.fxml'.";
+		assert percentuale2 != null : "fx:id=\"percentuale2\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert percentualeTempo != null
 				: "fx:id=\"percentualeTempo\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert percentualeCosto != null
@@ -224,10 +238,17 @@ public class FXMLController {
 		oraFine.setValueFactory(valueFactoryFine);
 		percentualeTempo.setText("" + Math.round(percentuale.getValue()) + "%");
 		percentualeCosto.setText("" + Math.round(100.00 - percentuale.getValue()) + "%");
+		percentuale2.setText("" + Math.round(riempimento.getValue()) + "%");
 		percentuale.valueProperty().addListener((observable, oldValue, newValue) -> {
 
 			percentualeTempo.setText("" + Math.round(percentuale.getValue()) + "%");
 			percentualeCosto.setText("" + Math.round(100.00 - percentuale.getValue()) + "%");
+
+		});
+
+		riempimento.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+			percentuale2.setText("" + Math.round(riempimento.getValue()) + "%");
 
 		});
 
