@@ -1,6 +1,7 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +17,9 @@ public class Ordine implements Comparable<Ordine> {
 	boolean timeout;
 	LinkedList<Arco> percorso;
 	Mezzo mezzo;
+	LocalDateTime dataArrivo;
+	String dataOraString;
+	String dataArrivoString;
 
 	// TODO Aggiungere uno stato IN_ELABORAZIONE, IN_ATTESA
 
@@ -30,6 +34,24 @@ public class Ordine implements Comparable<Ordine> {
 		this.timeout = false;
 		this.mezzo = null;
 		this.percorso = new LinkedList<Arco>();
+		this.dataArrivo = null;
+
+	}
+
+	public Ordine(int id, Citta sorgente, Citta destinazione, double peso, double volume, String dataPartenza,
+			String dataArrivo) {
+
+		this.id = id;
+		this.sorgente = sorgente;
+		this.destinazione = destinazione;
+		this.peso = peso;
+		this.volume = volume;
+		this.timeout = false;
+		this.mezzo = null;
+		this.percorso = new LinkedList<Arco>();
+		this.dataArrivo = null;
+		this.dataOraString = dataPartenza;
+		this.dataArrivoString = dataArrivo;
 
 	}
 
@@ -65,73 +87,48 @@ public class Ordine implements Comparable<Ordine> {
 		return destinazione;
 	}
 
-	/**
-	 * @param destinazione the destinazione to set
-	 */
-	public void setDestinazione(Citta destinazione) {
-		this.destinazione = destinazione;
-	}
-
-	/**
-	 * @return the peso
-	 */
 	public double getPeso() {
 		return peso;
 	}
 
-	/**
-	 * @param peso the peso to set
-	 */
-	public void setPeso(double peso) {
-		this.peso = peso;
-	}
-
-	/**
-	 * @return the volume
-	 */
 	public double getVolume() {
 		return volume;
 	}
 
-	/**
-	 * @param volume the volume to set
-	 */
-	public void setVolume(double volume) {
-		this.volume = volume;
-	}
-
-	/**
-	 * @return the dataOra
-	 */
 	public LocalDateTime getDataOra() {
 		return dataOra;
 	}
 
-	/**
-	 * @param dataOra the dataOra to set
-	 */
 	public void setDataOra(LocalDateTime dataOra) {
 		this.dataOra = dataOra;
 	}
 
-	/**
-	 * @return the percorso
-	 */
 	public List<Arco> getPercorso() {
 		return percorso;
 	}
 
-	/**
-	 * @param percorso the percorso to set
-	 */
 	public void setPercorso(List<Arco> percorso) {
 		this.percorso = new LinkedList<Arco>(percorso);
 	}
 
 	public Arco getProssimaTratta() {
-
 		return ((LinkedList<Arco>) percorso).peek();
+	}
 
+	public String getDataOraString() {
+		return dataOraString;
+	}
+
+	public void setDataOraString(String dataOraString) {
+		this.dataOraString = dataOraString;
+	}
+
+	public String getDataArrivoString() {
+		return dataArrivoString;
+	}
+
+	public void setDataArrivoString(String dataArrivoString) {
+		this.dataArrivoString = dataArrivoString;
 	}
 
 	public void rimuoviTratta() {
@@ -177,23 +174,22 @@ public class Ordine implements Comparable<Ordine> {
 		return timeout;
 	}
 
-	/**
-	 * @param timeout the timeout to set
-	 */
 	public void setTimeout(boolean timeout) {
 		this.timeout = timeout;
 	}
 
-	/**
-	 * @return the mezzo
-	 */
+	public LocalDateTime getDataArrivo() {
+		return dataArrivo;
+	}
+
+	public void setDataArrivo(LocalDateTime dataArrivo) {
+		this.dataArrivo = dataArrivo;
+	}
+
 	public Mezzo getMezzo() {
 		return mezzo;
 	}
 
-	/**
-	 * @param mezzo the mezzo to set
-	 */
 	public void setMezzo(Mezzo mezzo) {
 		this.mezzo = mezzo;
 	}
@@ -214,8 +210,9 @@ public class Ordine implements Comparable<Ordine> {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", sorgente=" + sorgente + ", destinazione=" + destinazione + ", peso=" + peso
-				+ ", volume=" + volume + ", dataOra=" + dataOra + "]";
+		return "-ID: " + id + "\n-Sorgente: " + sorgente + "\n-Destinazione: " + destinazione + "\n-Peso= " + peso
+				+ "\n-Volume=" + volume + "\n-Data di arrivo= "
+				+ dataOra.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString();
 	}
 
 }

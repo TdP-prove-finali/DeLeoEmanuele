@@ -7,6 +7,8 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
@@ -14,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="880.0" prefWidth="992.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.SimulatoreDiTrasportoMerce.FXMLController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="943.0" prefWidth="992.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.SimulatoreDiTrasportoMerce.FXMLController">
    <top>
       <Label alignment="TOP_CENTER" prefHeight="29.0" prefWidth="789.0" text="Simulatore di trasporto merce" translateY="10.0" BorderPane.alignment="CENTER">
          <font>
@@ -29,7 +31,7 @@
                <children>
                   <VBox prefHeight="434.0" prefWidth="284.0" translateX="10.0">
                      <children>
-                        <TextArea disable="true" editable="false" maxHeight="394.0" maxWidth="289.0" opacity="0.93" prefHeight="337.0" prefWidth="275.0" text="Istruzioni:&#10;&#10;1) Scegliere i mezzi desiderati ed&#10; inserire i parametri per ognuno di&#10; essi. &#10;  &#10;2) Premere su CREA GRAFO per la&#10; creazione della rete di trasporto &#10;&#10;3) Inserire i parametri e lanciare la&#10; simulazione premendo su &#10; SIMULA&#10;&#10;4) Inserire l'ID dell'ordine da&#10; tracciare e premere su CERCA" translateX="10.0" translateY="10.0">
+                        <TextArea disable="true" editable="false" opacity="0.93" prefHeight="337.0" prefWidth="275.0" text="Istruzioni:&#10;&#10;1) Scegliere i mezzi desiderati ed&#10; inserire i parametri per ognuno di&#10; essi. &#10;  &#10;2) Premere su CREA GRAFO per la&#10; creazione della rete di trasporto &#10;&#10;3) Inserire i parametri e lanciare la&#10; simulazione premendo su &#10; SIMULA&#10;&#10;4) Inserire l'ID dell'ordine da&#10; tracciare e premere su CERCA" translateX="10.0" translateY="10.0">
                            <VBox.margin>
                               <Insets left="12.0" />
                            </VBox.margin>
@@ -41,7 +43,7 @@
                   </VBox>
                   <VBox prefHeight="376.0" prefWidth="492.0" translateX="100.0" translateY="20.0">
                      <children>
-                        <HBox maxWidth="537.0" prefHeight="132.0" prefWidth="506.0" translateX="20.0" translateY="40.0">
+                        <HBox prefHeight="132.0" prefWidth="506.0" translateX="20.0" translateY="40.0">
                            <children>
                               <RadioButton fx:id="ticTir" disable="true" mnemonicParsing="false" selected="true" text="Tir" translateX="-15.0" translateY="20.0">
                                  <font>
@@ -143,10 +145,10 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox prefHeight="184.0" prefWidth="506.0" translateY="-10.0">
+                        <HBox prefHeight="184.0" prefWidth="506.0" translateX="15.0" translateY="-10.0">
                            <children>
-                              <TextArea fx:id="outputGrafo" editable="false" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="241.0" translateX="30.0" translateY="20.0" />
-                              <VBox prefHeight="200.0" prefWidth="100.0">
+                              <TextArea fx:id="outputGrafo" editable="false" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="130.0" translateX="45.0" translateY="20.0" />
+                              <VBox prefHeight="178.0" prefWidth="113.0">
                                  <children>
                                     <HBox prefHeight="100.0" prefWidth="200.0">
                                        <children>
@@ -156,8 +158,8 @@
                                     </HBox>
                                     <Label fx:id="percentualeTempo" alignment="TOP_CENTER" prefHeight="17.0" prefWidth="38.0" translateX="105.0" translateY="-60.0" />
                                     <Label fx:id="percentualeCosto" alignment="TOP_CENTER" prefHeight="17.0" prefWidth="34.0" translateX="235.0" translateY="-75.0" />
-                                    <Slider fx:id="percentuale" prefHeight="38.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" translateX="140.0" translateY="-70.0" value="50.0" />
-                                    <Button fx:id="btnCreaGrafo" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="30.0" prefWidth="109.0" text="Crea grafo" translateX="140.0" translateY="-50.0">
+                                    <Slider fx:id="percentuale" prefHeight="38.0" prefWidth="158.0" showTickLabels="true" showTickMarks="true" translateX="120.0" translateY="-70.0" value="50.0" />
+                                    <Button fx:id="btnCreaGrafo" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#creaGrafo" prefHeight="30.0" prefWidth="138.0" text="Crea grafo" translateX="120.0" translateY="-50.0">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -172,9 +174,9 @@
             </HBox>
             <HBox prefHeight="285.0" prefWidth="789.0">
                <children>
-                  <VBox prefHeight="284.0" prefWidth="508.0">
+                  <VBox prefHeight="285.0" prefWidth="550.0">
                      <children>
-                        <HBox prefHeight="79.0" prefWidth="592.0" translateX="70.0" translateY="10.0">
+                        <HBox prefHeight="79.0" prefWidth="592.0" translateX="90.0" translateY="10.0">
                            <children>
                               <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" translateX="-35.0">
                                  <children>
@@ -217,63 +219,73 @@
                         </HBox>
                         <HBox prefHeight="222.0" prefWidth="494.0">
                            <children>
-                              <TextArea fx:id="outputOrdini" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="495.0" translateX="30.0" />
+                              <TableView fx:id="myTable" minHeight="-Infinity" minWidth="-Infinity" prefHeight="214.0" prefWidth="628.0" translateX="30.0" translateY="10.0">
+                                <columns>
+                                  <TableColumn fx:id="id" prefWidth="51.0" text="ID" />
+                                  <TableColumn fx:id="peso" prefWidth="48.0" text="Peso" />
+                                    <TableColumn fx:id="volume" prefWidth="54.0" text="Volume" />
+                                    <TableColumn fx:id="sorgente" prefWidth="102.0" text="Sorgente" />
+                                    <TableColumn fx:id="destinazione" prefWidth="106.0" text="Destinazione" />
+                                    <TableColumn fx:id="partenza" prefWidth="127.0" text="Partenza" />
+                                    <TableColumn fx:id="arrivo" prefWidth="139.0" text="Arrivo" />
+                                </columns>
+                              </TableView>
                            </children>
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefHeight="285.0" prefWidth="398.0" translateX="50.0">
+                  <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefHeight="285.0" prefWidth="398.0" translateY="3.0">
                      <children>
                         <HBox prefHeight="71.0" prefWidth="373.0">
                            <children>
-                              <Label text="Timeout" translateX="50.0" translateY="5.0">
+                              <Label text="Timeout" translateX="80.0" translateY="5.0">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="timeout" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="63.0" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="51.0" translateY="30.0" />
+                              <TextField fx:id="timeout" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="63.0" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="51.0" translateX="30.0" translateY="30.0" />
                               <Label prefHeight="17.0" prefWidth="98.0" text="\% Riempimento" translateX="100.0" translateY="6.0">
                                  <font>
                                     <Font size="13.0" />
                                  </font></Label>
                               <Slider fx:id="riempimento" prefHeight="46.0" prefWidth="136.0" showTickLabels="true" showTickMarks="true" translateX="-20.0" translateY="25.0" value="50.0" />
-                              <Label fx:id="percentuale2" alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="35.0" translateX="10.0" translateY="20.0" />
+                              <Label fx:id="percentuale2" alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="17.0" prefWidth="35.0" translateX="-10.0" translateY="20.0" />
                            </children></HBox>
-                        <TextArea fx:id="outputGenerale" editable="false" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="376.0" translateX="-15.0" translateY="-15.0">
+                        <TextArea fx:id="outputGenerale" editable="false" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="77.0" prefWidth="257.0" translateX="-15.0" translateY="5.0">
                            <VBox.margin>
                               <Insets left="100.0" right="70.0" top="20.0" />
                            </VBox.margin>
                         </TextArea>
-                        <Button fx:id="btnSimula" mnemonicParsing="false" onAction="#simula" prefHeight="30.0" prefWidth="132.0" text="Simula">
+                        <Button fx:id="btnSimula" mnemonicParsing="false" onAction="#simula" prefHeight="30.0" prefWidth="132.0" text="Simula" translateY="30.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <ProgressBar fx:id="myProgressBar" prefHeight="15.0" prefWidth="271.0" progress="0.0" translateY="15.0" />
+                        <ProgressBar fx:id="myProgressBar" prefHeight="18.0" prefWidth="303.0" progress="0.0" translateX="2.0" translateY="50.0" />
                      </children>
                   </VBox>
                </children>
             </HBox>
             <HBox prefHeight="191.0" prefWidth="789.0">
                <children>
-                  <TextArea fx:id="outputOridneSpecifico" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="130.0" prefWidth="496.0" translateX="30.0" translateY="20.0">
+                  <TextArea fx:id="outputOridneSpecifico" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="196.0" prefWidth="629.0" translateX="30.0" translateY="30.0">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </TextArea>
-                  <Label prefHeight="21.0" prefWidth="22.0" text="ID:" translateX="100.0" translateY="50.0">
+                  <Label prefHeight="21.0" prefWidth="29.0" text="ID: " translateX="105.0" translateY="50.0">
                      <font>
-                        <Font size="15.0" />
+                        <Font name="System Bold" size="15.0" />
                      </font>
                   </Label>
                   <VBox alignment="TOP_CENTER" prefHeight="220.0" prefWidth="137.0" translateX="112.0">
                      <children>
                         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="63.0" translateX="-50.0" translateY="50.0" />
+                              <TextField fx:id="idOrdine" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="61.0" translateX="-50.0" translateY="50.0" />
                            </children>
                         </HBox>
-                        <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" onAction="#cercaOrdine" prefHeight="30.0" prefWidth="70.0" text="Cerca" translateX="-55.0">
+                        <Button fx:id="btnTracciaOrdine" mnemonicParsing="false" onAction="#cercaOrdine" prefHeight="30.0" prefWidth="70.0" text="Cerca" translateX="-60.0" translateY="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>

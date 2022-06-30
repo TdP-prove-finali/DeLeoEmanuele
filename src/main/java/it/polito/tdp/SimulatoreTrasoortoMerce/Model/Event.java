@@ -1,7 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class Event implements Comparable<Event> {
 

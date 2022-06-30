@@ -46,11 +46,6 @@ public class Arco extends DefaultWeightedEdge {
 		this.tipo = tipo;
 	}
 
-	@Override
-	public String toString() {
-		return "Arco [ distanza: " + distanza + ", tipo=" + tipo + "]";
-	}
-
 	public Object getSorgente() {
 		return this.getSource();
 	}
@@ -59,18 +54,12 @@ public class Arco extends DefaultWeightedEdge {
 		return this.getTarget();
 	}
 
-	/**
-	 * @return the id
-	 */
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	@Override

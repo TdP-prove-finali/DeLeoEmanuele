@@ -1,5 +1,6 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,6 +31,7 @@ public class Simulator {
 	Map<Integer, Mezzo> mapMezzi;
 	Map<String, Citta> mapCitta;
 	double percentualeRiempimento;
+	List<Citta> listaMetropoli;
 
 	// Eventi
 
@@ -61,6 +63,7 @@ public class Simulator {
 		this.dijkstra = dijkstra;
 		this.mapMezziConSpecifiche = mezziConSpecifiche;
 		this.mapCitta = citta;
+		this.listaMetropoli = listaMetropoli;
 		List<Citta> listaCittaTotali = new ArrayList<Citta>(citta.values());
 		this.mapMezzi = new TreeMap<Integer, Mezzo>();
 		this.queue = new PriorityQueue<Event>();
@@ -68,8 +71,8 @@ public class Simulator {
 		this.costoTotale = 0.0;
 		this.percentualeRiempimento = percentualeRiempimento;
 
-		int contatoreId = 1; // COUNTER PER GLI ID DEGLI ORDINI SIMULATI
-		Citta sorgente = null; // DATI UTILIZZATI PER SIMULARE GLI ORDINI
+		int contatoreId = 1;
+		Citta sorgente = null;
 		Citta destinazione = null;
 		Ordine newOrdine = null;
 		Random rand = new Random();
@@ -80,9 +83,9 @@ public class Simulator {
 		long oreGiornaliere = ChronoUnit.HOURS.between(oraInizio, oraFine);
 		LocalDate data = this.dataInizio;
 
-		for (Mezzo m : mezziConSpecifiche.values()) { // PESI E VOLUMI MASSIMI GLI ORDINI SONO VINCOLATI ALLA META DEI
-														// PESI E VOLUMI
-			if (m.getPesoMax() >= maxPeso) { // DISPONIBILI PER I TIPI DI MEZZI GENERATI
+		for (Mezzo m : mezziConSpecifiche.values()) {
+
+			if (m.getPesoMax() >= maxPeso) {
 				maxPeso = m.getPesoMax() / 10;
 			}
 			if (m.getSpazioMax() >= maxVolume) {
@@ -90,15 +93,14 @@ public class Simulator {
 			}
 		}
 
-		while (data.isBefore(dataInizio.plusDays(nGiorni))) { // CICLO DI CREAZIONE DEGLI ORDINI
+		while (data.isBefore(dataInizio.plusDays(nGiorni))) {
 			int contatoreOrdini = 1;
 			LocalTime ora = oraInizio;
 			while (contatoreOrdini <= this.nOrdiniGiornalieri) {
 
 				int minutes = rand.nextInt(60 * ((int) oreGiornaliere));
 				ora = ora.plusMinutes(minutes);
-				boolean isCittaMinore1 = rand.nextInt(4) == 0; // valori booleani per sapere se si tratta di citta
-																// minori o metropoli
+				boolean isCittaMinore1 = rand.nextInt(4) == 0;
 				boolean isCittaMinore2 = rand.nextInt(4) == 0;
 				double peso = rand.nextDouble() * (maxPeso - minPeso) + minPeso;
 				double pesoApprossimato = Math.round(peso * 100.0) / 100.0;
@@ -142,6 +144,7 @@ public class Simulator {
 					contatoreOrdini++;
 					contatoreId++;
 				}
+
 			}
 			data = data.plusDays(1);
 
@@ -159,15 +162,14 @@ public class Simulator {
 			Date currentDate = new Date();
 			long diffInMillies = Math.abs(currentDate.getTime() - startDate.getTime());
 			long diff = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
 			if (diff >= 5) {
 				runMezzo();
 			}
 
 			if (!this.queue.isEmpty()) {
 				Event nuovoEvento = this.queue.poll();
-				processEvent(nuovoEvento);
 
+				processEvent(nuovoEvento);
 			} else {
 				check = false;
 			}
@@ -202,6 +204,9 @@ public class Simulator {
 
 				while (!mapMezzi.get(id).getOrdiniMezzo().isEmpty()) {
 					Ordine ordineDaGestire = mapMezzi.get(id).getOrdiniMezzo().poll();
+					ordineDaGestire.setTimeout(false);
+					ordineDaGestire.setDataOra(mapMezzi.get(id).getDataMezzo());
+					dao.addOrdineConsegnato(ordineDaGestire, mapMezzi.get(id).getCitta(), mapMezzi.get(id));
 					long secondi = Math.round(
 							(ordineDaGestire.getProssimaTratta().getDistanza() / mapMezzi.get(id).getVelocitaMedia())
 									* 3600);
@@ -212,6 +217,7 @@ public class Simulator {
 					if (mapMezzi.get(id).getDestinazione().equals(ordineDaGestire.getDestinazione())) {
 						System.out.println("ordine " + ordineDaGestire.getId() + " CONSEGNATO");
 						dao.addOrdineConsegnato(ordineDaGestire, ordineDaGestire.getDestinazione(), mapMezzi.get(id));
+						dao.inserisciDataArrivo(ordineDaGestire.getId(), ordineDaGestire.getDataOra());
 						nOrdiniCompletati++;
 					} else {
 
@@ -221,11 +227,11 @@ public class Simulator {
 						dao.addOrdineConsegnato(ordineDaGestire, mapMezzi.get(id).getDestinazione(), mapMezzi.get(id));
 						ordineDaGestire.rimuoviTratta();
 						this.queue.add(new Event(ordineDaGestire, EventType.ORDINE_IN_CORSO,
-								ordineDaGestire.getDataOra().plusHours(1)));
+								ordineDaGestire.getDataOra().plusHours(timeout)));
 					}
 				}
 				costoTotale += distanza * mapMezzi.get(id).getCostoCarburante();
-				mapMezzi.get(id).setDataMezzo(mapMezzi.get(id).getDataMezzo().plusSeconds(time));
+				mapMezzi.get(id).setDataMezzo(mapMezzi.get(id).getDataMezzo().plusSeconds(time * 2));
 				mapMezzi.get(id).setPesoOccupato(0.0);
 				mapMezzi.get(id).setSpazioOccupato(0.0);
 			}
@@ -275,16 +281,32 @@ public class Simulator {
 			break;
 		case ORDINE_IN_CORSO:
 
-			currentOnDB = nuovoOrdine;
-			currentOnDB.setTimeout(true);
-			Arco passo = currentOnDB.getProssimaTratta();
+			Arco passo = nuovoOrdine.getProssimaTratta();
 
 			if (passo == null) {
-				System.out.println("ordine " + currentOnDB.getId() + " consegnato a " + currentOnDB.getDestinazione()
-						+ " da " + currentOnDB.getSorgente() + " \n\n tappe: " + currentOnDB.getPercorso());
-				dao.addOrdineConsegnato(currentOnDB, currentOnDB.getDestinazione(), currentOnDB.getMezzo());
+				dao.addOrdineConsegnato(nuovoOrdine, nuovoOrdine.getDestinazione(), nuovoOrdine.getMezzo());
+				dao.inserisciDataArrivo(nuovoOrdine.getId(), nuovoOrdine.getDataOra());
 				break;
 			}
+
+			nuovoOrdine.setDataOra(nuovoOrdine.getDataOra().plusHours(timeout));
+
+			if (nuovoOrdine.isTimeout()
+					&& Duration.between(currentOnDB.getDataOra(), nuovoOrdine.getDataOra()).toHours() > 24) {
+				if (nuovoOrdine.getMezzo().getNumeroVIaggi() == 0
+						&& !nuovoOrdine.getMezzo().getOrdiniMezzo().contains(nuovoOrdine)) {
+
+					if (!listaMetropoli.contains(nuovoOrdine.getSorgente())) {
+						nuovoOrdine.setSorgente(this.cercaMetropoliVicina(nuovoOrdine.getSorgente()));
+						dao.addConsegnaEsterna(nuovoOrdine);
+						nuovoOrdine.setPercorso(dijkstra
+								.getPath(nuovoOrdine.getSorgente(), nuovoOrdine.getDestinazione()).getEdgeList());
+						passo = nuovoOrdine.getProssimaTratta();
+					}
+				}
+			}
+
+			nuovoOrdine.setTimeout(true);
 
 			if (!mapMezzi.containsKey(passo.getId())) {
 				mapMezzi.put(passo.getId(),
@@ -298,17 +320,17 @@ public class Simulator {
 
 			}
 
-			currentOnDB.setMezzo(mapMezzi.get(passo.getId()));
+			nuovoOrdine.setMezzo(mapMezzi.get(passo.getId()));
 
-			if (!mapMezzi.get(passo.getId()).getOrdiniMezzo().contains(currentOnDB)) {
-				if (currentOnDB.isProcessable()) {
+			if (!mapMezzi.get(passo.getId()).getOrdiniMezzo().contains(nuovoOrdine)) {
+				if (nuovoOrdine.isProcessable()) {
 
-					mapMezzi.get(passo.getId()).assegnaOrdine(currentOnDB);
-					mapMezzi.get(passo.getId()).setDataMezzo(currentOnDB.getDataOra());
+					mapMezzi.get(passo.getId()).assegnaOrdine(nuovoOrdine);
+					mapMezzi.get(passo.getId()).setDataMezzo(nuovoOrdine.getDataOra());
 
 				} else {
-					this.queue.add(
-							new Event(currentOnDB, EventType.ORDINE_IN_CORSO, currentOnDB.getDataOra().plusHours(1)));
+					this.queue.add(new Event(nuovoOrdine, EventType.ORDINE_IN_CORSO,
+							nuovoOrdine.getDataOra().plusHours(timeout)));
 
 				}
 			}
@@ -398,4 +420,19 @@ public class Simulator {
 		this.percentualeRiempimento = percentualeRiempimento;
 	}
 
+	public Citta cercaMetropoliVicina(Citta citta) {
+
+		double peso = 0.0;
+		double bestPeso = 999999999;
+		Citta migliore = null;
+		for (Citta metropoli : listaMetropoli) {
+
+			peso = dijkstra.getPath(citta, metropoli).getWeight();
+			if (peso <= bestPeso) {
+				bestPeso = peso;
+				migliore = metropoli;
+			}
+		}
+		return migliore;
+	}
 }

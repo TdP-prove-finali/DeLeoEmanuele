@@ -1,27 +1,24 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
 
 import java.time.Duration;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.KShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.alg.shortestpath.EppsteinKShortestPath;
 import org.jgrapht.alg.shortestpath.YenKShortestPath;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
-import org.jgrapht.traverse.DepthFirstIterator;
-import org.jgrapht.traverse.GraphIterator;
 
 import it.polito.tdp.SimulatoreTrasportoMerce.DAO.DAO;
+import javafx.collections.ObservableList;
 
 public class Model {
 
@@ -55,17 +52,13 @@ public class Model {
 		Arco arco = null;
 		this.grafo = new DirectedWeightedMultigraph<Citta, Arco>(Arco.class);
 		Graphs.addAllVertices(this.grafo, mapCitta.values());
+		
 		for (Tratta t : dao.getTratte(mapMezziConSpecifiche.values(), mapCitta)) {
-			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) { // L'ARCO ESTENDE
-																										// IL DEFAULT
-																										// WEIGHTED EDGE
-																										// E CONSERVA IL
-																										// TIPO DI MEZZO
-
-				arco = grafo.addEdge(t.getSorgente(), t.getDestinazione()); // OGNI ARCO E' PESATO IN BASE AL PESO
-																			// COMPLESSIVO
-				arco.setDistanza(t.getDistanza()); // CHE TIENE TRACCIA DELLA VELOCITA' E DEL COSTO DEL CARBURANTE DEL
-													// VEICOLO IN QUESTIONE
+			
+			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) { 
+				
+				arco = grafo.addEdge(t.getSorgente(), t.getDestinazione());
+				arco.setDistanza(t.getDistanza()); 
 				arco.setId(codiciMezzi);
 				arco.setTipo(t.getMezzoTrasporto());
 
@@ -78,9 +71,9 @@ public class Model {
 			}
 
 		}
-		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo); // L'ALGORITMO DI DIJKSTRA SI BASERA' SUI SINGOLI PESI
+		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo); 
 
-		return String.format("Grafo creato con:\n%d vertici e %d archi\n", this.grafo.vertexSet().size(),
+		return String.format(" GRAFO CREATO\n\n - %d vertici\n - %d archi\n", this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size());
 
 	}
@@ -89,16 +82,8 @@ public class Model {
 
 		double pesoComplessivo = ((distanza / velocita) * (percentuale / 100))
 				* (costoCarburante * ((100 - percentuale) / 100)); // PESO
-		// UNICO
-		// PER
-		// OGNI
-		// PARAMETRO
-
+		
 		return Math.round(pesoComplessivo * 100.0) / 100.0;
-	}
-
-	public Map<String, Citta> getMappaCitta() {
-		return this.mapCitta;
 	}
 
 	public void generaMezzo(String tipo, double pesoMax, double spazioMax, double velocitaMedia, // METODO PER
@@ -125,8 +110,8 @@ public class Model {
 		return this.mapMezziConSpecifiche;
 	}
 
-	public String getOrdini() {
-		return dao.getOrdini();
+	public ObservableList<Ordine> getOrdini() {
+		return dao.getOrdini(this.mapCitta);
 	}
 
 	public DijkstraShortestPath<Citta, Arco> getDijkstra() {
@@ -144,6 +129,11 @@ public class Model {
 	public List<Citta> getMetropoli() {
 		return this.listaMetropoli;
 	}
+	
+	public Map<String, Citta> getMappaCitta() {
+		return this.mapCitta;
+	}
+
 
 	public String tracciaOrdine(int id) {
 
@@ -151,45 +141,64 @@ public class Model {
 
 		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
 		output += ordineTracciato + "\n\n";
-		output += "STORICO:\n";
+		output += "STORICO\n";
 		output += dao.tracciaOrdine(id) + "\n\n";
 
 		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo);
 		List<GraphPath<Citta, Arco>> paths = pathInspector.getPaths(ordineTracciato.getSorgente(),
 				ordineTracciato.getDestinazione(), 2);
 
-		List<Citta> bestPath = paths.get(0).getVertexList();
-		List<Citta> bestSecondPath = paths.get(1).getVertexList();
-
 		List<Arco> edgeBestPath = paths.get(0).getEdgeList();
 		List<Arco> edgeBestSecondPath = paths.get(1).getEdgeList();
 
-		output += "Percorso migliore: \n" + edgeBestPath;
+		output += "PERCORSO MIGLIORE: \n";
 		// System.out.println("Best path" + edgeBestPath);
 
 		double costo1 = 0.0;
+		double costoEuro1 = 0.0;
+		LocalDateTime dataArrivo = ordineTracciato.getDataOra();
+
 		for (Arco arco : edgeBestPath) {
+			output += "" + (Citta) arco.getSorgente() + " - " + (Citta) arco.getDestinazione() + "  mezzo="
+					+ arco.getTipo() + " id=" + arco.getId() + "\n";
 			costo1 += getPesoComplessivo(arco.getDistanza(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
+			costoEuro1 += arco.getDistanza() * mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante();
+			ordineTracciato.setDataOra(ordineTracciato.getDataOra().plusSeconds(Math.round(
+					(arco.getDistanza() / mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia()) * 3600)));
 
 		}
-		// System.out.println("costo1=" + costo1);
-		output += "\nCOSTO: " + costo1 + " €\n\n";
-		// System.out.println("Second Best path" + edgeBestSecondPath);
+		
+		output += "\nPESO: " + Math.round(costo1 * 100.0) / 100.0 + "     COSTO: "
+				+ Math.round(costoEuro1 * 100.00) / 100.00 + " €     DURATA: "
+				+ Duration.between(dataArrivo, ordineTracciato.getDataOra()).toMinutes() + " minuti\n\n";
+		
 
-		output += "Percorso alternativo: \n" + edgeBestSecondPath;
+		output += "PERCORSO ALTERNATIVO: \n";
 		double costo2 = 0.0;
+		double costoEuro2 = 0.0;
+
+		Ordine ordineTracciato2 = dao.getOrdineById(id, mapCitta);
 
 		for (Arco arco : edgeBestSecondPath) {
+
+			output += "" + (Citta) arco.getSorgente() + " - " + (Citta) arco.getDestinazione() + "  mezzo="
+					+ arco.getTipo() + " id=" + arco.getId() + "\n";
 			costo2 += getPesoComplessivo(arco.getDistanza(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
+			costoEuro2 += arco.getDistanza() * mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante();
+			ordineTracciato2.setDataOra(ordineTracciato2.getDataOra().plusSeconds(Math.round(
+					(arco.getDistanza() / mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia()) * 3600)));
 
 		}
 
-		output += "\nCOSTO: " + costo2 + " €\n\n";
-		
+		output += "\nPESO: " + Math.round(costo2 * 100.0) / 100.0 + "     COSTO: "
+				+ Math.round(costoEuro2 * 100.00) / 100.00 + " €     DURATA: "
+				+ Duration.between(dataArrivo, ordineTracciato2.getDataOra()).toMinutes() + " minuti";
+
+		output.replace("Autobus", "Tir");
 		return output;
 
 		// System.out.println("costo2=" + costo2);

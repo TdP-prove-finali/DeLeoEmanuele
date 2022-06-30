@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +18,8 @@ import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Mezzo;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Tratta;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class DAO {
 
@@ -57,9 +61,10 @@ public class DAO {
 		try {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
-			statement.executeUpdate("INSERT INTO ordini (Sorgente, Destinazione, Peso, Volume, Data) " + "VALUES ('"
-					+ o.getSorgente().getNome() + "','" + o.getDestinazione().getNome() + "','" + o.getPeso() + "','"
-					+ o.getVolume() + "','" + Timestamp.valueOf(o.getDataOra()) + "');");
+			statement.executeUpdate("INSERT INTO ordini (ID, Peso, Volume, Sorgente, Destinazione, dataPartenza) "
+					+ "VALUES ('" + o.getId() + "','" + o.getPeso() + "','" + o.getVolume() + "','"
+					+ o.getSorgente().getNome() + "','" + o.getDestinazione().getNome() + "','"
+					+ Timestamp.valueOf(o.getDataOra()) + "');");
 			statement.close();
 			conn.close();
 
@@ -70,10 +75,10 @@ public class DAO {
 
 	}
 
-	public String getOrdini() { // LEGGE GLI ORDINI SIMULATI DAL DB
+	public ObservableList<Ordine> getOrdini(Map<String, Citta> mapCitta) { // LEGGE GLI ORDINI SIMULATI DAL DB
 
-		String output = "";
-		final String sql = "SELECT* FROM ordini ORDER BY Data;";
+		ObservableList<Ordine> ordini = FXCollections.observableArrayList();
+		final String sql = "SELECT* FROM ordini ORDER BY DataPartenza;";
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -81,9 +86,20 @@ public class DAO {
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-				output += String.format("%-8s %8s %8s %8s %12s %17s", " ID=" + rs.getInt("ID"),
-						rs.getString("Sorgente"), rs.getString("Destinazione"), "  peso=" + rs.getDouble("Peso"),
-						" volume=" + rs.getDouble("Volume"), " " + rs.getTimestamp("Data").toLocalDateTime() + "\n");
+
+				String data = "";
+
+				if (rs.getTimestamp("dataArrivo") != null) {
+					data = rs.getTimestamp("dataArrivo").toLocalDateTime()
+							.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString();
+
+					ordini.add(new Ordine(rs.getInt("ID"), mapCitta.get(rs.getString("Sorgente")),
+							mapCitta.get(rs.getString("Destinazione")), rs.getDouble("Peso"), rs.getDouble("Volume"),
+							rs.getTimestamp("dataPartenza").toLocalDateTime()
+									.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString(),
+							data));
+
+				}
 			}
 
 			st.close();
@@ -93,10 +109,10 @@ public class DAO {
 			e.printStackTrace();
 			throw new RuntimeException("Errore di connessione al Database.");
 		}
-		return output;
+		return ordini;
 	}
 
-	public Ordine getOrdineById(int id, Map<String, Citta> cittaMap) { // LEGGE GLI ORDINI SIMULATI DAL DB
+	public Ordine getOrdineById(int id, Map<String, Citta> cittaMap) {
 
 		final String sql = "SELECT * FROM ordini WHERE id = " + id;
 		Ordine ordine = null;
@@ -110,7 +126,10 @@ public class DAO {
 				Citta sorgente = cittaMap.get(rs.getString("Sorgente"));
 				Citta destinazione = cittaMap.get(rs.getString("Destinazione"));
 				ordine = new Ordine(rs.getInt("ID"), sorgente, destinazione, rs.getDouble("Peso"),
-						rs.getDouble("Volume"), rs.getTimestamp("Data").toLocalDateTime());
+						rs.getDouble("Volume"), rs.getTimestamp("DataPartenza").toLocalDateTime());
+				if (rs.getTimestamp("dataArrivo") == null) {
+					ordine.setDataArrivo(null);
+				}
 			}
 
 			st.close();
@@ -123,10 +142,8 @@ public class DAO {
 		return ordine;
 	}
 
-	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) { // RESTITUISCE LE TRATTE DAL
-																							// DB PER I MEZZI
-																							// SPECIFICATI
-
+	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) { 
+		
 		List<Tratta> tratte = new ArrayList<Tratta>();
 		final String sql = "SELECT* FROM tratte;";
 		try {
@@ -202,9 +219,14 @@ public class DAO {
 		try {
 			Connection conn = ConnectDB.getConnection();
 			Statement statement = conn.createStatement();
+			String tipo = mezzo.getTipo();
+
+			if (tipo.equals("Autobus")) {
+				tipo = "Tir";
+			}
 			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
-					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + mezzo.getDataMezzo() + "','"
-					+ mezzo.getId() + "','" + mezzo.getTipo() + "');");
+					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + o.getDataOra() + "','" + mezzo.getId()
+					+ "','" + tipo + "');");
 			statement.close();
 			conn.close();
 
@@ -226,12 +248,14 @@ public class DAO {
 
 			while (rs.next()) {
 
-				output += rs.getString("citta_consegna") + "  mezzo:" + rs.getInt("ID_mezzo") + " "
-						+ rs.getString("tipo_mezzo") + "  data: " + rs.getTimestamp("data").toLocalDateTime();
+				output += rs.getString("citta_consegna") + "  Mezzo: " + rs.getInt("ID_mezzo") + " "
+						+ rs.getString("tipo_mezzo") + "  Data: " + rs.getTimestamp("data").toLocalDateTime()
+								.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString()
+						+ "\n";
 			}
-			
+
 			if (output.equals("")) {
-				output+="Ordine non ancora partito";
+				output += "Ordine non ancora partito\n";
 			}
 			st.close();
 			conn.close();
@@ -243,4 +267,38 @@ public class DAO {
 
 		return output;
 	}
+
+	public void addConsegnaEsterna(Ordine ordine) {
+		try {
+			Connection conn = ConnectDB.getConnection();
+			Statement statement = conn.createStatement();
+			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
+					+ "VALUES ('" + ordine.getId() + "','" + ordine.getSorgente().getNome() + "','"
+					+ ordine.getDataOra() + "','" + 0 + "','" + "CONSEGNA ESTERNA" + "');");
+			statement.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+	}
+
+	public void inserisciDataArrivo(int id, LocalDateTime data) {
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn
+					.prepareStatement("UPDATE ordini SET dataArrivo='" + data + "' WHERE ID=" + id + ";");
+			st.executeUpdate();
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+
+	}
+
 }

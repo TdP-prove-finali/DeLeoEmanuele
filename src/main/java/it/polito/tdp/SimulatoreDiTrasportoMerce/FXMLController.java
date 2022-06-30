@@ -1,10 +1,16 @@
 package it.polito.tdp.SimulatoreDiTrasportoMerce;
 
 import java.net.URL;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Citta;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Model;
+import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Ordine;
 import it.polito.tdp.SimulatoreTrasoortoMerce.Model.Simulator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,14 +20,16 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLController {
 
 	private Model model;
 	private Simulator simulatore;
-
 	@FXML
 	private ResourceBundle resources;
 
@@ -74,6 +82,30 @@ public class FXMLController {
 	private TextField nGiorni;
 
 	@FXML
+	private TableView<Ordine> myTable;
+
+	@FXML
+	private TableColumn<Ordine, Integer> id;
+
+	@FXML
+	private TableColumn<Ordine, Double> peso;
+
+	@FXML
+	private TableColumn<Ordine, Double> volume;
+
+	@FXML
+	private TableColumn<Ordine, Citta> sorgente;
+
+	@FXML
+	private TableColumn<Ordine, Citta> destinazione;
+
+	@FXML
+	private TableColumn<Ordine, String> partenza;
+
+	@FXML
+	private TableColumn<Ordine, String> arrivo;
+
+	@FXML
 	private TextField ordiniGiornalieri;
 
 	@FXML
@@ -90,9 +122,6 @@ public class FXMLController {
 
 	@FXML
 	private Slider riempimento;
-
-	@FXML
-	private TextArea outputOrdini;
 
 	@FXML
 	private TextArea outputGenerale;
@@ -121,22 +150,29 @@ public class FXMLController {
 		outputOridneSpecifico.clear();
 		outputOridneSpecifico.appendText(model.tracciaOrdine(Integer.parseInt(idOrdine.getText())));
 		;
+
 	}
 
 	@FXML
 	void creaGrafo(ActionEvent event) {
+
 		outputGrafo.clear();
 		outputGenerale.clear();
-		outputOrdini.clear();
-		model.generaMezzo("Autobus", Double.parseDouble(pesoTir.getText().replace(",", ".")),
-				Double.parseDouble(volumeTir.getText().replace(",", ".")),
-				Double.parseDouble(velocitaTir.getText().replace(",", ".")),
-				Double.parseDouble(costoTir.getText().replace(",", ".")));
+		outputOridneSpecifico.clear();
 
-		if (ticAereo.isSelected()) {
-			model.generaMezzo("Aereo", Double.parseDouble(pesoAereo.getText().replace(",", ".")),
-					Double.parseDouble(volumeAereo.getText()), Double.parseDouble(velocitaAereo.getText()),
-					Double.parseDouble(costoAereo.getText()));
+		try {
+			model.generaMezzo("Autobus", Double.parseDouble(pesoTir.getText().replace(",", ".")),
+					Double.parseDouble(volumeTir.getText().replace(",", ".")),
+					Double.parseDouble(velocitaTir.getText().replace(",", ".")),
+					Double.parseDouble(costoTir.getText().replace(",", ".")));
+			if (ticAereo.isSelected()) {
+				model.generaMezzo("Aereo", Double.parseDouble(pesoAereo.getText().replace(",", ".")),
+						Double.parseDouble(volumeAereo.getText()), Double.parseDouble(velocitaAereo.getText()),
+						Double.parseDouble(costoAereo.getText()));
+			}
+		} catch (NumberFormatException e) {
+			outputGenerale.appendText("Uno o più valori inseriti non sono accettabili\nRIPROVA");
+			return;
 		}
 
 		double perc = percentuale.getValue();
@@ -144,7 +180,6 @@ public class FXMLController {
 
 			perc = 1;
 		}
-
 		if (percentuale.getValue() == 100) {
 			perc = 99;
 		}
@@ -156,45 +191,97 @@ public class FXMLController {
 	@FXML
 	void simula(ActionEvent event) {
 
+		final GetDailyEmpDataService service = new GetDailyEmpDataService();
+		myProgressBar.progressProperty().bind(service.progressProperty());
+		myProgressBar.visibleProperty().bind(service.runningProperty());
+		btnSimula.setDisable(true);
 		outputOridneSpecifico.clear();
-		outputOrdini.clear();
 		outputGenerale.clear();
 		model.clearTableOrdini();
 		model.clearTableOrdiniConsegnati();
 		this.simulatore = new Simulator();
-		simulatore.setnGiorni(Integer.parseInt(nGiorni.getText()));
-		simulatore.setTimeout(Integer.parseInt(timeout.getText()));
-		simulatore.setnOrdiniGiornalieri(Integer.parseInt(ordiniGiornalieri.getText()));
-		simulatore.setDataInizio(LocalDateTime.now().toLocalDate());
-		simulatore.setOraInizio(oraInizio.getValue(), 0);
-		simulatore.setOraFine(oraFine.getValue(), 0);
+		service.start();
 
-		simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta(),
-				model.getMetropoli(), riempimento.getValue());
+	}
 
-		outputOrdini.appendText(model.getOrdini());
+	public class GetDailyEmpDataTask extends Task<Integer> {
 
-		long runStart = System.currentTimeMillis();
-		simulatore.run();
-		long runEnd = System.currentTimeMillis();
+		@Override
+		protected Integer call() throws Exception {
 
-		long runTimeElapsed = runEnd - runStart;
-		System.out.println("**** RUN ELAPSED: " + runTimeElapsed / 1000 + " seconds");
+			updateProgress(0, 500);
+			Thread.sleep(500);
+			updateProgress(30, 500);
+			Thread.sleep(100);
+			updateProgress(50, 500);
+			Thread.sleep(100);
+			updateProgress(100, 500);
+			Thread.sleep(200);
 
-		outputGenerale.appendText("Ordini consegnati = " + simulatore.getnOrdiniCompletati() + "\n\n" + "Tir = "
-				+ simulatore.getNtir() + "\n" + "Aerei = " + simulatore.getNaerei() + "\n Costo totale="
-				+ simulatore.getCostoTotale());
+			try {
+				simulatore.setnGiorni(Integer.parseInt(nGiorni.getText()));
+				simulatore.setTimeout(Integer.parseInt(timeout.getText()));
+				simulatore.setnOrdiniGiornalieri(Integer.parseInt(ordiniGiornalieri.getText()));
+			} catch (NumberFormatException e) {
+				outputGenerale.appendText("Uno o più valori inseriti non sono accettabili\nRIPROVA");
+				return 0;
+			}
+			simulatore.setDataInizio(LocalDateTime.now().toLocalDate());
+			simulatore.setOraInizio(oraInizio.getValue(), 0);
+			simulatore.setOraFine(oraFine.getValue(), 0);
 
-		btnTracciaOrdine.setDisable(false);
-		myProgressBar.setProgress(0);
+			updateProgress(120, 500);
+			Thread.sleep(100);
+			updateProgress(150, 500);
+			simulatore.init(model.getDijkstra(), model.grafo, model.getMezziConSpecifiche(), model.getMappaCitta(),
+					model.getMetropoli(), riempimento.getValue());
+			// outputOrdini.appendText(model.getOrdini());
+			updateProgress(300, 500);
+			simulatore.run();
+			updateProgress(400, 500);
+			Thread.sleep(100);
+			updateProgress(450, 500);
+
+			outputGenerale.appendText(" ORDINI CONSEGNATI = " + simulatore.getnOrdiniCompletati() + " ("
+					+ Math.round(Double.parseDouble("" + simulatore.getnOrdiniCompletati())
+							/ (Double.parseDouble(ordiniGiornalieri.getText()) * Double.parseDouble(nGiorni.getText()))
+							* 100)
+					+ " %)\n" + " TIR = " + simulatore.getNtir() + " , " + " AEREI = " + simulatore.getNaerei()
+					+ "\n COSTO TOTALE = " + simulatore.getCostoTotale() + " €");
+
+			myTable.setItems((ObservableList<Ordine>) model.getOrdini());
+			btnTracciaOrdine.setDisable(false);
+			btnSimula.setDisable(false);
+
+			updateProgress(500, 500);
+			Thread.sleep(100);
+			return 1;
+
+		}
+
+	}
+
+	public class GetDailyEmpDataService extends Service<Integer> {
+
+		/**
+		 * Create and return the task for fetching the data. Note that this method is
+		 * called on the background thread (all other code in this application is on the
+		 * JavaFX Application Thread!).
+		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
+		protected Task createTask() {
+			return new GetDailyEmpDataTask();
+		}
 	}
 
 	public void setModel(Model modello) {
 		this.model = modello;
+
 	}
 
 	@FXML
-	void initialize() {
+	void initialize() throws InterruptedException {
 		assert ticTir != null : "fx:id=\"ticTir\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert volumeTir != null : "fx:id=\"volumeTir\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert pesoTir != null : "fx:id=\"pesoTir\" was not injected: check your FXML file 'Scene.fxml'.";
@@ -214,7 +301,6 @@ public class FXMLController {
 		assert oraInizio != null : "fx:id=\"oraInizio\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert oraFine != null : "fx:id=\"oraFine\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert timeout != null : "fx:id=\"timeout\" was not injected: check your FXML file 'Scene.fxml'.";
-		assert outputOrdini != null : "fx:id=\"outputOrdini\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert outputGenerale != null : "fx:id=\"outputGenerale\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert btnSimula != null : "fx:id=\"btnSimula\" was not injected: check your FXML file 'Scene.fxml'.";
 		assert myProgressBar != null : "fx:id=\"myProgressBar\" was not injected: check your FXML file 'Scene.fxml'.";
@@ -253,5 +339,14 @@ public class FXMLController {
 
 		});
 
+		id.setCellValueFactory(new PropertyValueFactory<>("id"));
+		peso.setCellValueFactory(new PropertyValueFactory<>("peso"));
+		volume.setCellValueFactory(new PropertyValueFactory<>("volume"));
+		sorgente.setCellValueFactory(new PropertyValueFactory<>("sorgente"));
+		destinazione.setCellValueFactory(new PropertyValueFactory<>("destinazione"));
+		partenza.setCellValueFactory(new PropertyValueFactory<>("dataOraString"));
+		arrivo.setCellValueFactory(new PropertyValueFactory<>("dataArrivoString"));
+
 	}
+
 }
