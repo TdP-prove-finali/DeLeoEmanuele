@@ -1,6 +1,4 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
-
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,7 +22,6 @@ public class Simulator {
 
 	public Date startDate = null;
 	public DAO dao;
-	public LocalDateTime tempo;
 	Graph<Citta, Arco> grafo;
 	DijkstraShortestPath<Citta, Arco> dijkstra;
 	Map<String, Mezzo> mapMezziConSpecifiche;
@@ -86,7 +83,7 @@ public class Simulator {
 		for (Mezzo m : mezziConSpecifiche.values()) {
 
 			if (m.getPesoMax() >= maxPeso) {
-				maxPeso = m.getPesoMax() / 10;
+				maxPeso = m.getPesoMax() / 100;
 			}
 			if (m.getSpazioMax() >= maxVolume) {
 				maxVolume = m.getSpazioMax() / 10;
@@ -100,7 +97,7 @@ public class Simulator {
 
 				int minutes = rand.nextInt(60 * ((int) oreGiornaliere));
 				ora = ora.plusMinutes(minutes);
-				boolean isCittaMinore1 = rand.nextInt(4) == 0;
+				boolean isCittaMinore1 = rand.nextInt(3) == 0;
 				boolean isCittaMinore2 = rand.nextInt(4) == 0;
 				double peso = rand.nextDouble() * (maxPeso - minPeso) + minPeso;
 				double pesoApprossimato = Math.round(peso * 100.0) / 100.0;
@@ -251,6 +248,7 @@ public class Simulator {
 
 			currentOnDB.setPercorso(
 					dijkstra.getPath(currentOnDB.getSorgente(), currentOnDB.getDestinazione()).getEdgeList());
+
 			Arco prossimo = currentOnDB.getProssimaTratta();
 
 			if (!mapMezzi.containsKey(prossimo.getId())) {
@@ -290,22 +288,6 @@ public class Simulator {
 			}
 
 			nuovoOrdine.setDataOra(nuovoOrdine.getDataOra().plusHours(timeout));
-
-			if (nuovoOrdine.isTimeout()
-					&& Duration.between(currentOnDB.getDataOra(), nuovoOrdine.getDataOra()).toHours() > 24) {
-				if (nuovoOrdine.getMezzo().getNumeroVIaggi() == 0
-						&& !nuovoOrdine.getMezzo().getOrdiniMezzo().contains(nuovoOrdine)) {
-
-					if (!listaMetropoli.contains(nuovoOrdine.getSorgente())) {
-						nuovoOrdine.setSorgente(this.cercaMetropoliVicina(nuovoOrdine.getSorgente()));
-						dao.addConsegnaEsterna(nuovoOrdine);
-						nuovoOrdine.setPercorso(dijkstra
-								.getPath(nuovoOrdine.getSorgente(), nuovoOrdine.getDestinazione()).getEdgeList());
-						passo = nuovoOrdine.getProssimaTratta();
-					}
-				}
-			}
-
 			nuovoOrdine.setTimeout(true);
 
 			if (!mapMezzi.containsKey(passo.getId())) {

@@ -176,13 +176,13 @@ public class FXMLController {
 		}
 
 		double perc = percentuale.getValue();
-		if (percentuale.getValue() == 0) {
+//		if (percentuale.getValue() == 0) {
 
-			perc = 1;
-		}
-		if (percentuale.getValue() == 100) {
-			perc = 99;
-		}
+//			perc = 1;
+//		}
+//		if (percentuale.getValue() == 100) {
+//			perc = 99;
+//		}
 
 		outputGrafo.appendText(model.creaGrafo(perc));
 		btnSimula.setDisable(false);

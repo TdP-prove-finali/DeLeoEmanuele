@@ -31,7 +31,7 @@
                <children>
                   <VBox prefHeight="434.0" prefWidth="284.0" translateX="10.0">
                      <children>
-                        <TextArea disable="true" editable="false" opacity="0.93" prefHeight="337.0" prefWidth="275.0" text="Istruzioni:&#10;&#10;1) Scegliere i mezzi desiderati ed&#10; inserire i parametri per ognuno di&#10; essi. &#10;  &#10;2) Premere su CREA GRAFO per la&#10; creazione della rete di trasporto &#10;&#10;3) Inserire i parametri e lanciare la&#10; simulazione premendo su &#10; SIMULA&#10;&#10;4) Inserire l'ID dell'ordine da&#10; tracciare e premere su CERCA" translateX="10.0" translateY="10.0">
+                        <TextArea editable="false" opacity="0.93" prefHeight="337.0" prefWidth="275.0" text="Istruzioni:&#10;&#10;1) Scegliere i mezzi desiderati ed&#10; inserire i parametri per ognuno di&#10; essi. &#10;  &#10;2) Inserire le percentuali di peso di&#10; costo e tempo per il tipo di &#10; simulazione desiderato, infine&#10; premere su CREA GRAFO per la&#10; creazione della rete di trasporto &#10;&#10;3) Inserire i parametri e lanciare la&#10; simulazione premendo su &#10; SIMULA&#10;&#10;4) Inserire l'ID dell'ordine da&#10; tracciare e premere su CERCA &#10; per mostrarne le informazioni" translateX="10.0" translateY="10.0">
                            <VBox.margin>
                               <Insets left="12.0" />
                            </VBox.margin>
@@ -57,7 +57,12 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="volumeTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="50">
+                                    <Label text="( m³ )" translateY="-25.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="volumeTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="5" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -70,7 +75,12 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="pesoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="200">
+                                    <Label text="( Kg )" translateY="-25.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="pesoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="200" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -83,7 +93,12 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="velocitaTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="100">
+                                    <Label text="( Km/h )" translateY="-25.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="velocitaTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="100" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -96,7 +111,12 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="costoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="2.00">
+                                    <Label text="( €/Km )" translateY="-25.0">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="costoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="1.00" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -113,7 +133,7 @@
                               </RadioButton>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="87.0">
                                  <children>
-                                    <TextField fx:id="volumeAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="50">
+                                    <TextField fx:id="volumeAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="10">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -129,7 +149,7 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="123.0">
                                  <children>
-                                    <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="400" translateX="-10.0">
+                                    <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="300" translateX="-10.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -137,7 +157,7 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="102.0">
                                  <children>
-                                    <TextField fx:id="costoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="7.00" translateX="-10.0">
+                                    <TextField fx:id="costoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="2.00" translateX="-10.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -145,9 +165,9 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox prefHeight="184.0" prefWidth="506.0" translateX="15.0" translateY="-10.0">
+                        <HBox prefHeight="184.0" prefWidth="506.0" translateX="25.0" translateY="-10.0">
                            <children>
-                              <TextArea fx:id="outputGrafo" editable="false" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="130.0" translateX="45.0" translateY="20.0" />
+                              <TextArea fx:id="outputGrafo" editable="false" maxHeight="95.0" minHeight="70.0" prefHeight="95.0" prefWidth="119.0" translateX="45.0" translateY="20.0" />
                               <VBox prefHeight="178.0" prefWidth="113.0">
                                  <children>
                                     <HBox prefHeight="100.0" prefWidth="200.0">
@@ -236,9 +256,9 @@
                   </VBox>
                   <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefHeight="285.0" prefWidth="398.0" translateY="3.0">
                      <children>
-                        <HBox prefHeight="71.0" prefWidth="373.0">
+                        <HBox prefHeight="71.0" prefWidth="373.0" translateX="-25.0">
                            <children>
-                              <Label text="Timeout" translateX="80.0" translateY="5.0">
+                              <Label prefHeight="20.0" prefWidth="74.0" text="Timeout (h)" translateX="95.0" translateY="5.0">
                                  <font>
                                     <Font size="14.0" />
                                  </font>

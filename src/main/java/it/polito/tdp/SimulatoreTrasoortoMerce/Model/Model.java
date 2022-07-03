@@ -23,12 +23,11 @@ import javafx.collections.ObservableList;
 public class Model {
 
 	public Graph<Citta, Arco> grafo;
-	DAO dao;
-	Map<String, Mezzo> mapMezziConSpecifiche;
-	List<Citta> listaMetropoli;
-	Map<String, Citta> mapCitta;
-	Map<Citta, List<Ordine>> mappaOrdiniConPartenza;
-	DijkstraShortestPath<Citta, Arco> dijkstra;
+	private DAO dao;
+	private Map<String, Mezzo> mapMezziConSpecifiche;
+	private List<Citta> listaMetropoli;
+	private Map<String, Citta> mapCitta;
+	private DijkstraShortestPath<Citta, Arco> dijkstra;
 
 	public Model() {
 		dao = new DAO();
@@ -52,13 +51,13 @@ public class Model {
 		Arco arco = null;
 		this.grafo = new DirectedWeightedMultigraph<Citta, Arco>(Arco.class);
 		Graphs.addAllVertices(this.grafo, mapCitta.values());
-		
+
 		for (Tratta t : dao.getTratte(mapMezziConSpecifiche.values(), mapCitta)) {
-			
-			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) { 
-				
+
+			if (grafo.containsVertex(t.getSorgente()) && grafo.containsVertex(t.getDestinazione())) {
+
 				arco = grafo.addEdge(t.getSorgente(), t.getDestinazione());
-				arco.setDistanza(t.getDistanza()); 
+				arco.setDistanza(t.getDistanza());
 				arco.setId(codiciMezzi);
 				arco.setTipo(t.getMezzoTrasporto());
 
@@ -71,7 +70,7 @@ public class Model {
 			}
 
 		}
-		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo); 
+		dijkstra = new DijkstraShortestPath<Citta, Arco>(grafo);
 
 		return String.format(" GRAFO CREATO\n\n - %d vertici\n - %d archi\n", this.grafo.vertexSet().size(),
 				this.grafo.edgeSet().size());
@@ -80,24 +79,25 @@ public class Model {
 
 	public double getPesoComplessivo(double distanza, double velocita, double costoCarburante, double percentuale) {
 
-		double pesoComplessivo = ((distanza / velocita) * (percentuale / 100))
-				* (costoCarburante * ((100 - percentuale) / 100)); // PESO
-		
-		return Math.round(pesoComplessivo * 100.0) / 100.0;
+		double pesoComplessivo = 0.0;
+		if (percentuale <= 15) {
+			pesoComplessivo = ((costoCarburante * distanza) * (100 - percentuale));
+			return Math.round(pesoComplessivo * 100.00) / 100.00;
+		}
+
+		if (percentuale >= 85) {
+			pesoComplessivo = ((distanza / velocita)) * percentuale;
+			return Math.round(pesoComplessivo * 100.00) / 100.00;
+		}
+
+		pesoComplessivo = (((distanza / velocita) * 10) * percentuale)
+				+ ((((costoCarburante * distanza) / 10) * (100 - percentuale))); // PESO
+
+		return Math.round(pesoComplessivo * 100.00) / 100.00;
 	}
 
-	public void generaMezzo(String tipo, double pesoMax, double spazioMax, double velocitaMedia, // METODO PER
-																									// SPECIFICARE I
-																									// PARAMETRI DI OGNI
-																									// MEZZO (UNIVOCI
-																									// PER OGNI MEZZO
-																									// UNA VOLTA CREATI
-																									// ---> L'IDEA E' DI
-																									// UTILIZZARE TIR
-																									// (nel db
-																									// "Autobus") E
-																									// AEREI
-			double costoCarburante) { // PER TENERE TRACCIA USO UNA MAPPA < "tipo veicolo" , veicolo >
+	public void generaMezzo(String tipo, double pesoMax, double spazioMax, double velocitaMedia,
+			double costoCarburante) {
 		Citta c = null;
 		Mezzo nuovo = new Mezzo(mapMezziConSpecifiche.size(), tipo, pesoMax, spazioMax, velocitaMedia, costoCarburante,
 				c, null);
@@ -129,24 +129,24 @@ public class Model {
 	public List<Citta> getMetropoli() {
 		return this.listaMetropoli;
 	}
-	
+
 	public Map<String, Citta> getMappaCitta() {
 		return this.mapCitta;
 	}
-
 
 	public String tracciaOrdine(int id) {
 
 		String output = "";
 
 		Ordine ordineTracciato = dao.getOrdineById(id, mapCitta);
-		output += ordineTracciato + "\n\n";
 		output += "STORICO\n";
 		output += dao.tracciaOrdine(id) + "\n\n";
 
-		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo);
+		KShortestPathAlgorithm<Citta, Arco> pathInspector = new YenKShortestPath<Citta, Arco>(grafo); // IMPLEMENTAZIONE
+																										// ALGORITMO DI
+																										// YEN
 		List<GraphPath<Citta, Arco>> paths = pathInspector.getPaths(ordineTracciato.getSorgente(),
-				ordineTracciato.getDestinazione(), 2);
+				ordineTracciato.getDestinazione(), 2); // LISTA DI K SHORTEST PATHS
 
 		List<Arco> edgeBestPath = paths.get(0).getEdgeList();
 		List<Arco> edgeBestSecondPath = paths.get(1).getEdgeList();
@@ -160,7 +160,7 @@ public class Model {
 
 		for (Arco arco : edgeBestPath) {
 			output += "" + (Citta) arco.getSorgente() + " - " + (Citta) arco.getDestinazione() + "  mezzo="
-					+ arco.getTipo() + " id=" + arco.getId() + "\n";
+					+ arco.getTipo().replace("Autobus", "Tir") + " id=" + arco.getId() + "\n";
 			costo1 += getPesoComplessivo(arco.getDistanza(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
@@ -169,11 +169,10 @@ public class Model {
 					(arco.getDistanza() / mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia()) * 3600)));
 
 		}
-		
+
 		output += "\nPESO: " + Math.round(costo1 * 100.0) / 100.0 + "     COSTO: "
 				+ Math.round(costoEuro1 * 100.00) / 100.00 + " €     DURATA: "
 				+ Duration.between(dataArrivo, ordineTracciato.getDataOra()).toMinutes() + " minuti\n\n";
-		
 
 		output += "PERCORSO ALTERNATIVO: \n";
 		double costo2 = 0.0;
@@ -184,7 +183,7 @@ public class Model {
 		for (Arco arco : edgeBestSecondPath) {
 
 			output += "" + (Citta) arco.getSorgente() + " - " + (Citta) arco.getDestinazione() + "  mezzo="
-					+ arco.getTipo() + " id=" + arco.getId() + "\n";
+					+ arco.getTipo().replace("Autobus", "Tir") + " id=" + arco.getId() + "\n";
 			costo2 += getPesoComplessivo(arco.getDistanza(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getVelocitaMedia(),
 					mapMezziConSpecifiche.get(arco.getTipo()).getCostoCarburante(), 50);
@@ -201,7 +200,8 @@ public class Model {
 		output.replace("Autobus", "Tir");
 		return output;
 
-		// System.out.println("costo2=" + costo2);
+	}
+	// System.out.println("costo2=" + costo2);
 
 //		double costoViaggio = 0.0;
 //		String output = dao.getOrdineById(id, mapCitta) + "\n";
@@ -236,6 +236,5 @@ public class Model {
 //			}
 //		}
 //		return output;
-	}
 
 }

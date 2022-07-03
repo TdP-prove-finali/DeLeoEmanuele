@@ -211,7 +211,7 @@ public class Ordine implements Comparable<Ordine> {
 	@Override
 	public String toString() {
 		return "-ID: " + id + "\n-Sorgente: " + sorgente + "\n-Destinazione: " + destinazione + "\n-Peso= " + peso
-				+ "\n-Volume=" + volume + "\n-Data di arrivo= "
+				+ "\n-Volume=" + volume + "\n-Data di accoglienza= "
 				+ dataOra.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString();
 	}
 
