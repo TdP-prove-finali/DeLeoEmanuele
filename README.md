@@ -13,4 +13,4 @@ Istruzioni per istallazione.
 
 -Aprire il progetto e lanciare la classe Main
 
-Per un piccolo video visitare il link:  https://www.youtube.com/watch?v=E0nlXVHj2-g&t=13s 
+Per un piccolo video visitare il link: https://youtu.be/5N6vxgUKjaM
