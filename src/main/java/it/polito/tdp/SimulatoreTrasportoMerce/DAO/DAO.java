@@ -142,8 +142,8 @@ public class DAO {
 		return ordine;
 	}
 
-	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) { 
-		
+	public List<Tratta> getTratte(Collection<Mezzo> mezzi, Map<String, Citta> mapCitta) {
+
 		List<Tratta> tratte = new ArrayList<Tratta>();
 		final String sql = "SELECT* FROM tratte;";
 		try {
@@ -225,8 +225,8 @@ public class DAO {
 				tipo = "Tir";
 			}
 			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
-					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + o.getDataOra() + "','" + mezzo.getId()
-					+ "','" + tipo + "');");
+					+ "VALUES ('" + o.getId() + "','" + citta.getNome() + "','" + mezzo.getDataMezzo().toLocalDate()
+					+ "','" + mezzo.getId() + "','" + tipo + "');");
 			statement.close();
 			conn.close();
 
@@ -250,7 +250,7 @@ public class DAO {
 
 				output += rs.getString("citta_consegna") + "  Mezzo: " + rs.getInt("ID_mezzo") + " "
 						+ rs.getString("tipo_mezzo") + "  Data: " + rs.getTimestamp("data").toLocalDateTime()
-								.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")).toString()
+								.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")).toString()
 						+ "\n";
 			}
 
@@ -266,22 +266,6 @@ public class DAO {
 		}
 
 		return output;
-	}
-
-	public void addConsegnaEsterna(Ordine ordine) {
-		try {
-			Connection conn = ConnectDB.getConnection();
-			Statement statement = conn.createStatement();
-			statement.executeUpdate("INSERT INTO ordini_consegnati (ID, citta_consegna, data, ID_mezzo, tipo_mezzo) "
-					+ "VALUES ('" + ordine.getId() + "','" + ordine.getSorgente().getNome() + "','"
-					+ ordine.getDataOra() + "','" + 0 + "','" + "CONSEGNA ESTERNA" + "');");
-			statement.close();
-			conn.close();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Errore di connessione al Database.");
-		}
 	}
 
 	public void inserisciDataArrivo(int id, LocalDateTime data) {

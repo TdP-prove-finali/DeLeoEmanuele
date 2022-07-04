@@ -62,7 +62,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="volumeTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="5" translateY="-20.0">
+                                    <TextField fx:id="volumeTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="7" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -116,7 +116,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="costoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="1.00" translateY="-20.0">
+                                    <TextField fx:id="costoTir" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="1.50" translateY="-20.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -149,7 +149,7 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="123.0">
                                  <children>
-                                    <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="300" translateX="-10.0">
+                                    <TextField fx:id="velocitaAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="400" translateX="-10.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>
@@ -157,7 +157,7 @@
                               </VBox>
                               <VBox alignment="TOP_CENTER" prefHeight="79.0" prefWidth="102.0">
                                  <children>
-                                    <TextField fx:id="costoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="2.00" translateX="-10.0">
+                                    <TextField fx:id="costoAereo" alignment="TOP_CENTER" maxWidth="63.0" minWidth="30.0" prefHeight="25.0" prefWidth="63.0" text="2.50" translateX="-10.0">
                                        <font>
                                           <Font size="13.0" />
                                        </font></TextField>

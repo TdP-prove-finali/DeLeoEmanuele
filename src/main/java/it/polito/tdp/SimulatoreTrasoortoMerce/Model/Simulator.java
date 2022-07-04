@@ -1,4 +1,5 @@
 package it.polito.tdp.SimulatoreTrasoortoMerce.Model;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -210,6 +211,7 @@ public class Simulator {
 					distanza = (double) ordineDaGestire.getProssimaTratta().getDistanza();
 					time = secondi;
 					ordineDaGestire.setDataOra(mapMezzi.get(id).getDataMezzo().plusSeconds(secondi));
+					mapMezzi.get(id).setDataMezzo(ordineDaGestire.getDataOra());
 
 					if (mapMezzi.get(id).getDestinazione().equals(ordineDaGestire.getDestinazione())) {
 						System.out.println("ordine " + ordineDaGestire.getId() + " CONSEGNATO");
@@ -228,7 +230,7 @@ public class Simulator {
 					}
 				}
 				costoTotale += distanza * mapMezzi.get(id).getCostoCarburante();
-				mapMezzi.get(id).setDataMezzo(mapMezzi.get(id).getDataMezzo().plusSeconds(time * 2));
+				mapMezzi.get(id).setDataMezzo(mapMezzi.get(id).getDataMezzo().plusSeconds(time));
 				mapMezzi.get(id).setPesoOccupato(0.0);
 				mapMezzi.get(id).setSpazioOccupato(0.0);
 			}
