@@ -236,5 +236,10 @@ public class Model {
 //			}
 //		}
 //		return output;
+	
+	public Ordine getOrdineById(int id) {
+
+		return dao.getOrdineById(id, mapCitta);
+	}
 
 }
