@@ -148,8 +148,17 @@ public class FXMLController {
 	void cercaOrdine(ActionEvent event) {
 
 		outputOridneSpecifico.clear();
-		outputOridneSpecifico.appendText(model.tracciaOrdine(Integer.parseInt(idOrdine.getText())));
-		;
+		try {
+			int id = Integer.parseInt(idOrdine.getText());
+			if (model.getOrdineById(id) == null) {
+				outputOridneSpecifico.appendText("Ordine non presente nel sistema\nRIPROVA");
+				return;
+			}
+			outputOridneSpecifico.appendText(model.tracciaOrdine(id));
+		} catch (NumberFormatException e) {
+			outputOridneSpecifico.appendText("L'ID dell'ordine deve essere numerico e deve essere presente nel sistema\nRIPROVA");
+			return;
+		}
 
 	}
 
@@ -346,6 +355,7 @@ public class FXMLController {
 		destinazione.setCellValueFactory(new PropertyValueFactory<>("destinazione"));
 		partenza.setCellValueFactory(new PropertyValueFactory<>("dataOraString"));
 		arrivo.setCellValueFactory(new PropertyValueFactory<>("dataArrivoString"));
+		btnTracciaOrdine.setDisable(true);
 
 	}
 
